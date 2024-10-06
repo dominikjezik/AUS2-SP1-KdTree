@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34928.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AUS.Console", "AUS.Console\AUS.Console.csproj", "{B20BCC17-07AF-40E4-83AD-046458B86A2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AUS.DataStructures", "AUS.DataStructures\AUS.DataStructures.csproj", "{F3C77EB4-B200-410B-80A2-1CB089A0A792}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B20BCC17-07AF-40E4-83AD-046458B86A2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B20BCC17-07AF-40E4-83AD-046458B86A2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B20BCC17-07AF-40E4-83AD-046458B86A2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B20BCC17-07AF-40E4-83AD-046458B86A2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3C77EB4-B200-410B-80A2-1CB089A0A792}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3C77EB4-B200-410B-80A2-1CB089A0A792}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3C77EB4-B200-410B-80A2-1CB089A0A792}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3C77EB4-B200-410B-80A2-1CB089A0A792}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {30BF68B1-B9BF-4799-BC10-5951511B0516}
+	EndGlobalSection
+EndGlobal
