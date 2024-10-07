@@ -1,15 +1,10 @@
 ﻿namespace AUS.DataStructures.KDTree;
 
-public class KDTreeNode<TKey, TData> where TKey : IComparable
+public class KDTreeNode<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
 {
-    public TKey[] Keys { get; }
+    public TKey Key { get; }
 
     public List<TData> Data { get; } = new();
-
-    //public TData Data { get; }
-    //public KDTreeDataContainer<TData> Container { get; private set; }
-
-    //public TDataContainer Container { get; set; }
 
     public KDTreeNode<TKey, TData>? ParentNode { get; set; }
 
@@ -17,12 +12,9 @@ public class KDTreeNode<TKey, TData> where TKey : IComparable
 
     public KDTreeNode<TKey, TData>? RightNode { get; set; }
 
-    public KDTreeNode(TKey[] keys, TData data)
+    public KDTreeNode(TKey key, TData data)
     {
-        Keys = keys;
+        Key = key;
         Data.Add(data);
-        //Data = data;
-        //Container = new();
-        //Container.DataList.Add(data);
     }
 }

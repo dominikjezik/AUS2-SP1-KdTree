@@ -1,46 +1,42 @@
 ﻿namespace AUS.DataStructures.KDTree;
 
-public class KDTree<TKey, TData> where TKey : IComparable
+public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
 {
     private int _numberOfDimension;
 
-    protected KDTreeNode<TKey, TData>? _root;
+    private KDTreeNode<TKey, TData>? _root;
 
     public KDTree(int numberOfDimension)
     {
         _numberOfDimension = numberOfDimension;
     }
 
-    protected bool TryFindNode(TKey[] keysForSearch, out KDTreeNode<TKey, TData>? currentNode, out int actualDimenstion)
+    private bool TryFindNode(TKey keysForSearch, out KDTreeNode<TKey, TData>? currentNode, out int actualDimension)
     {
-        actualDimenstion = -1;
+        actualDimension = -1;
 
         if (_root == null)
         {
             currentNode = null;
             return false;
         }
-        else if (KeysEqual(keysForSearch, _root.Keys))
-        {
-            currentNode = _root;
-            return true;
-        }
-
-        actualDimenstion = 0;
+        
+        actualDimension = 0;
+        
         currentNode = _root;
 
         while (true)
         {
-            if (keysForSearch[actualDimenstion].CompareTo(currentNode.Keys[actualDimenstion]) <= 0)
+            // Kontrola ci som ho prave nenasiel
+            if (currentNode.Key.Equals(keysForSearch))
+            {
+                return true;
+            }
+            
+            if (keysForSearch.CompareTo(currentNode.Key, actualDimension) <= 0)
             {
                 if (currentNode.LeftNode != null)
                 {
-                    // Kontrola ci som ho prave nenasiel
-                    if (KeysEqual(currentNode.Keys, keysForSearch))
-                    {
-                        return true;
-                    }
-
                     // Presun do lava
                     currentNode = currentNode.LeftNode;
                 }
@@ -49,7 +45,6 @@ public class KDTree<TKey, TData> where TKey : IComparable
                     return false;
                 }
             }
-            //else if (keysForSearch[actualDimenstion].CompareTo(currentNode.Keys[actualDimenstion]) > 0)
             else
             {
                 if (currentNode.RightNode != null)
@@ -63,13 +58,13 @@ public class KDTree<TKey, TData> where TKey : IComparable
                 }
             }
 
-            actualDimenstion = ++actualDimenstion % _numberOfDimension;
+            actualDimension = ++actualDimension % _numberOfDimension;
         }
     }
 
-    public List<TData> FindByKeys(TKey[] keysForSearch)
+    public List<TData> FindByKey(TKey keyForSearch)
     {
-        var isFound = TryFindNode(keysForSearch, out var foundNode, out var _);
+        var isFound = TryFindNode(keyForSearch, out var foundNode, out var _);
 
         if (!isFound)
         {
@@ -79,20 +74,21 @@ public class KDTree<TKey, TData> where TKey : IComparable
         return foundNode!.Data;
     }
 
-    public List<TData> FindByInterval(TKey[] keysA, TKey[] keysB)
+    public List<TData> FindByEdgeKeys(TKey keysA, TKey keysB)
     {
+        // TODO: Toto by malo byt iba bodove vyhladavanie cize asi odstranit lebo staci 2 krat zavolat find
         throw new NotImplementedException();
     }
 
-    public virtual void Insert(TKey[] keys, TData data)
+    public void Insert(TKey keyForInsert, TData data)
     {
         if (_root == null)
         {
-            _root = new KDTreeNode<TKey, TData>(keys, data);
+            _root = new KDTreeNode<TKey, TData>(keyForInsert, data);
             return;
         }
 
-        var isFound = TryFindNode(keys, out var foundNode, out var lastDimenstion);
+        var isFound = TryFindNode(keyForInsert, out var foundNode, out var lastDimenstion);
 
         if (isFound)
         {
@@ -101,38 +97,39 @@ public class KDTree<TKey, TData> where TKey : IComparable
         }
 
         // Nenasiel sa cize vo foundNode je posledny uzol, kde skoncilo hladanie
-        if (keys[lastDimenstion].CompareTo(foundNode!.Keys[lastDimenstion]) <= 0)
+        if (keyForInsert.CompareTo(foundNode!.Key, lastDimenstion) <= 0)
         {
             // Vlozenie do lava
-            var newNode = new KDTreeNode<TKey, TData>(keys, data);
+            var newNode = new KDTreeNode<TKey, TData>(keyForInsert, data);
             foundNode.LeftNode = newNode;
             newNode.ParentNode = foundNode.LeftNode;
         }
         else
         {
             // Vlozenie do prava
-            var newNode = new KDTreeNode<TKey, TData>(keys, data);
+            var newNode = new KDTreeNode<TKey, TData>(keyForInsert, data);
             foundNode.RightNode = newNode;
             newNode.ParentNode = foundNode.RightNode;
         }
     }
 
-    public void Delete(TKey[] keys)
+    public void Delete(TKey key)
     {
         throw new NotImplementedException();
     }
 
-
-    private static bool KeysEqual(TKey[] keyA, TKey[] keyB)
+    public void ExecuteInOrder(Action<TKey> actionToExec)
     {
-        for (int i = 0; i < keyA.Length; i++)
-        {
-            if (keyA[i].CompareTo(keyB[i]) != 0)
-            {
-                return false;
-            }
-        }
+        ExecuteInOrder(actionToExec, _root);
+    }
 
-        return true;
+    private void ExecuteInOrder(Action<TKey> actionToExec, KDTreeNode<TKey, TData>? node)
+    {
+        if (node != null)
+        {
+            ExecuteInOrder(actionToExec, node.LeftNode);
+            actionToExec(node.Key);
+            ExecuteInOrder(actionToExec, node.RightNode);
+        }
     }
 }

@@ -12,11 +12,10 @@ public class AreaObject
 
     public GPSCoordinate CoordinateB { get; set; } = new(0, 0);
 
-    // TODO: Zoznam prekryvajucich sa objektov
+    public List<AreaObject> AssociatedObjects = new();
 
-    public bool ContainsCoordinate(double x, double y)
+    public override string ToString()
     {
-        // porovnat s A a B
-        throw new NotImplementedException();
+        return $"Id: {Id}, Type: {Type}, Description: {Description}, CoordinateA: {CoordinateA}, CoordinateB: {CoordinateB}";
     }
 }

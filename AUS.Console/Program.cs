@@ -3,24 +3,42 @@ using AUS.DataStructures.KDTree;
 
 Console.WriteLine("Hello, World!");
 
-var kdtree = new KDTree<double, object>(2);
+var kdtree = new KDTree<GPSCoordinate, AreaObject>(2);
 
-kdtree.Insert([50, 70], "50, 70");
-kdtree.Insert([20, 30], "20, 30");
-kdtree.Insert([30, 20], "30, 20");
+var area1 = new AreaObject
+{
+    CoordinateA = new(10, 10),
+    CoordinateB = new(40, 20),
+    Id = 1,
+    Description = "Lorem ipsum dolor sit amet",
+    Type = AreaObjectType.Parcel
+};
 
-var testValue = kdtree.FindByKeys([20, 30]);
+var area2 = new AreaObject
+{
+    CoordinateA = new(0, 0),
+    CoordinateB = new(40, 20),
+    Id = 1,
+    Description = "Lorem ipsum dolor sit amet",
+    Type = AreaObjectType.RealEstate
+};
+
+kdtree.Insert(new(10, 10), area1);
+kdtree.Insert(new(40, 20), area1);
+kdtree.Insert(new(0, 0), area2);
+kdtree.Insert(new(40, 20), area2);
+
+/*
+var testValue = kdtree.FindByKey(new(40, 20));
 foreach (var value in testValue)
 {
     Console.WriteLine(value);
 }
+*/
 
-
-var geoArea = new GeoAreaTree();
-geoArea.Insert([1, 2], new AreaObject
+kdtree.ExecuteInOrder(key =>
 {
-    CoordinateA = new GPSCoordinate(1, 2),
-    CoordinateB = new GPSCoordinate(2, 3)
+    Console.WriteLine(key);
 });
 
 
