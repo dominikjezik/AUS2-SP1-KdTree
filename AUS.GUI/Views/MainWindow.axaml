@@ -1,0 +1,84 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AUS.GUI.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        MinWidth="1000"
+        x:Class="AUS.GUI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="AUS S1"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+    
+    <Panel>
+        <ExperimentalAcrylicBorder IsHitTestVisible="False">
+            <ExperimentalAcrylicBorder.Material>
+                <ExperimentalAcrylicMaterial
+                    BackgroundSource="Digger"
+                    TintColor="Black"
+                    TintOpacity="1"
+                    MaterialOpacity="0.5" />
+            </ExperimentalAcrylicBorder.Material>
+        </ExperimentalAcrylicBorder>
+        
+        <Grid HorizontalAlignment="Left" 
+              VerticalAlignment="Top"
+              ColumnDefinitions="*"
+              RowDefinitions="Auto,*">
+
+            <Grid Grid.Row="0" Grid.Column="0"
+                  HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Top"
+                  Margin="0 10 0 0"
+                  ColumnDefinitions="*,Auto,160,Auto,100,100,Auto,100,100,Auto, Auto"
+                  RowDefinitions="Auto">
+                
+                <Button Grid.Row="0" Grid.Column="0" Content="+ Pridať" Margin="10 0 0 0" />
+                
+                <Label Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">Typ objektu:</Label>
+                <StackPanel Grid.Row="0" Grid.Column="2">
+                    <ComboBox SelectedIndex="0" MaxDropDownHeight="500" Width="140" Margin="5 0">
+                        <ComboBoxItem>Nehnuteľnosť</ComboBoxItem>
+                        <ComboBoxItem>Parcela</ComboBoxItem>
+                        <ComboBoxItem>Ľubovoľný</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
+                
+                <Label Grid.Row="0" Grid.Column="3" Margin="10 0 0 0" VerticalAlignment="Center">Bod 1:</Label>
+                <TextBox Grid.Row="0" Grid.Column="4" Watermark="X" Margin="5 0"/>
+                <TextBox Grid.Row="0" Grid.Column="5" Watermark="Y" Margin="5 0"/>
+                
+                <Label Grid.Row="0" Grid.Column="6" Margin="20 0 0 0" VerticalAlignment="Center">Bod 2:</Label>
+                <TextBox Grid.Row="0" Grid.Column="7" Watermark="X" Margin="5 0"/>
+                <TextBox Grid.Row="0" Grid.Column="8" Watermark="Y" Margin="5 0"/>
+                
+                <Button Grid.Row="0" Grid.Column="9" Content="Vyhľadať" Margin="5 0 10 0" />
+            </Grid>
+
+            <DataGrid Grid.Row="1" Grid.Column="0"
+                Margin="10" ItemsSource="{Binding AreaObjects}" 
+                IsReadOnly="True" 
+                GridLinesVisibility="All"
+                BorderThickness="1" BorderBrush="Gray">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Typ objektu" Width="Auto" Binding="{Binding DisplayType}" />
+                    <DataGridTextColumn Header="ID" Width="Auto" Binding="{Binding Id}" />
+                    <DataGridTextColumn Header="Bod A" Width="Auto" Binding="{Binding CoordinateA}" />
+                    <DataGridTextColumn Header="Bod B" Width="Auto" Binding="{Binding CoordinateB}" />
+                    <DataGridTextColumn Header="Popis" Width="*" Binding="{Binding Description}" />
+                </DataGrid.Columns>
+            </DataGrid>
+                
+        </Grid>
+        
+    </Panel>
+
+</Window>

@@ -38,4 +38,9 @@ public record GPSCoordinate(double X, double Y) : IKDTreeKeyComparable<GPSCoordi
 
         throw new ArgumentException("Allowed dimensions are only 0 and 1");
     }
+
+    public override string ToString()
+    {
+        return $"[{X}, {Y}]";
+    }
 }
