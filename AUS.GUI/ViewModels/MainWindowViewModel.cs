@@ -6,6 +6,8 @@ namespace AUS.GUI.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
+    public AreaObject? SelectedAreaObject { get; set; }
+    
     public ObservableCollection<AreaObject> AreaObjects { get; }
 
     public MainWindowViewModel()

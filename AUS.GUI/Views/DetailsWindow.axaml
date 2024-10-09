@@ -1,0 +1,68 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AUS.GUI.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="450"
+        MinWidth="300"
+        Width="350"
+        MinHeight="300"
+        Height="450"
+        x:Class="AUS.GUI.Views.DetailsWindow"
+        x:DataType="vm:DetailsWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="AUS S1"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:DetailsWindowViewModel Title="Example of Title"/>
+    </Design.DataContext>
+    
+    <Panel>
+        <ExperimentalAcrylicBorder IsHitTestVisible="False">
+            <ExperimentalAcrylicBorder.Material>
+                <ExperimentalAcrylicMaterial
+                    BackgroundSource="Digger"
+                    TintColor="White"
+                    TintOpacity="1"
+                    MaterialOpacity="0.65" />
+            </ExperimentalAcrylicBorder.Material>
+        </ExperimentalAcrylicBorder>
+        
+        <Grid HorizontalAlignment="Stretch" 
+              VerticalAlignment="Stretch"
+              ColumnDefinitions="50,*,*"
+              Margin="10"
+              RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto">
+            
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding Title}" FontSize="20" FontWeight="Bold" Margin="0 5 0 5"/>
+            
+            <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Typ</Label>
+            <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" SelectedIndex="" MaxDropDownHeight="500" HorizontalAlignment="Stretch" Margin="5 10 5 5">
+                <ComboBoxItem>Nehnuteľnosť</ComboBoxItem>
+                <ComboBoxItem>Parcela</ComboBoxItem>
+            </ComboBox>
+            
+            <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Bod 1</Label>
+            <TextBox Grid.Row="2" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding AreaObjectForm.CoordinateAX}" />
+            <TextBox Grid.Row="2" Grid.Column="2" Watermark="Y" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding AreaObjectForm.CoordinateAY}" />
+            
+            <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Bod 2</Label>
+            <TextBox Grid.Row="3" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding AreaObjectForm.CoordinateBX}" />
+            <TextBox Grid.Row="3" Grid.Column="2" Watermark="Y" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding AreaObjectForm.CoordinateBY}" />
+            
+            <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">ID</Label>
+            <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Watermark="ID" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding AreaObjectForm.Id}" />
+            
+            <Label Grid.Row="5" Grid.Column="0" Margin="0 12 0 0">Popis</Label>
+            <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Watermark="Popis" Margin="5 10 5 5" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding AreaObjectForm.Description}" />
+            
+            <Button Grid.Row="6" Grid.Column="2" Content="Uložiť" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="SaveButton_OnClick" />
+        </Grid>
+        
+    </Panel>
+
+</Window>

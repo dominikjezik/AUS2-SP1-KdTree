@@ -9,7 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Models\"/>
         <AvaloniaResource Include="Assets\**"/>
     </ItemGroup>
 
@@ -26,5 +25,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\AUS.DataStructures\AUS.DataStructures.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Views\DetailsWindow.axaml.cs">
+        <DependentUpon>DetailsWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
     </ItemGroup>
 </Project>
