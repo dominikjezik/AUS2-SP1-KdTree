@@ -1,13 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using AUS.DataStructures.GeoArea;
+using AUS.GUI.Models;
 
 namespace AUS.GUI.ViewModels;
 
-public partial class MainWindowViewModel : ViewModelBase
+public class MainWindowViewModel : ViewModelBase
 {
+    private AreaObjectForm _selectedAreaObjectForm = new();
     public AreaObject? SelectedAreaObject { get; set; }
-    
+
+    public AreaObjectForm SelectedAreaObjectForm
+    {
+        get => _selectedAreaObjectForm;
+        set {
+            _selectedAreaObjectForm = value;
+            OnPropertyChanged();
+        }
+    }
+
     public ObservableCollection<AreaObject> AreaObjects { get; }
 
     public MainWindowViewModel()

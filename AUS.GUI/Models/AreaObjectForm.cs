@@ -17,6 +17,4 @@ public class AreaObjectForm
     public string CoordinateBX { get; set; } = string.Empty;
     
     public string CoordinateBY { get; set; } = string.Empty;
-    
-    
 }

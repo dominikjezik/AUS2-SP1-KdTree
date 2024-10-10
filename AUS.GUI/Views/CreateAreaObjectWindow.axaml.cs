@@ -1,22 +1,21 @@
 using System;
 using AUS.GUI.Models;
-using AUS.GUI.ViewModels;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
 namespace AUS.GUI.Views;
 
-public partial class DetailsWindow : Window
+public partial class CreateAreaObjectWindow : Window
 {
-    public AreaObjectForm AreaObjectForm => (DataContext as DetailsWindowViewModel)!.AreaObjectForm;
+    public AreaObjectForm AreaObjectForm { get; private set; } = new();
     
     // event property for the SaveButton_OnClick event
     public event EventHandler<AreaObjectForm>? CreateAreaObject;
     
-    public DetailsWindow()
+    public CreateAreaObjectWindow()
     {
         InitializeComponent();
-        DataContext = new DetailsWindowViewModel();
+        DataContext = this;
     }
 
     private void SaveButton_OnClick(object? sender, RoutedEventArgs e)

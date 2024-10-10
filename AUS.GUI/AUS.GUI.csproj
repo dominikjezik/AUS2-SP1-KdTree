@@ -28,8 +28,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Views\DetailsWindow.axaml.cs">
+      <Compile Update="Views\CreateAreaObjectWindow.axaml.cs">
         <DependentUpon>DetailsWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\GenerateOperationsWindow.axaml.cs">
+        <DependentUpon>GenerateOperationsWindow.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
     </ItemGroup>
