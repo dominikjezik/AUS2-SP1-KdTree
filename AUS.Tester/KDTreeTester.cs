@@ -70,7 +70,8 @@ public class KDTreeTester
                 for (int i = 0; i < _numberOfDimension; i++)
                 {
                     // Ak je aspon jedna zlozka aktualneho kluca >=, ako minuleho kluca
-                    // prejdi na dalsi, malo by to byt OK
+                    // prejdi na dalsi, malo by to byt OK??
+                    // TODO: otazka ci je toto spravny predpoklad
                     if (key.Values[i] >= lastKey.Values[i])
                     {
                         foundOkKeyPart = true;
@@ -84,7 +85,7 @@ public class KDTreeTester
                 }
                 else
                 {
-                    throw new Exception("Nesprvne inorder poradie.");
+                    throw new Exception("Nespravne inorder poradie.");
                 }
             }
         });

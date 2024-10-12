@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using AUS.DataStructures.GeoArea;
 using AUS.GUI.Models;
 
@@ -7,81 +8,95 @@ namespace AUS.GUI.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    private AreaObjectForm _selectedAreaObjectForm = new();
-    public AreaObject? SelectedAreaObject { get; set; }
+    private AreaObject? _selectedAreaObject;
+    private AreaObjectForm? _selectedAreaObjectForm;
+    private ObservableCollection<AreaObject> _areaObjects;
+    private ObservableCollection<AreaObject> _associatedObjects;
+    
+    public AreaObject? SelectedAreaObject
+    {
+        get => _selectedAreaObject;
+        set
+        {
+            _selectedAreaObject = value;
+            SelectedAreaObjectForm = value?.ToAreaObjectForm();
+            OnPropertyChanged();
+        }
+    }
 
-    public AreaObjectForm SelectedAreaObjectForm
+    public AreaObjectForm? SelectedAreaObjectForm
     {
         get => _selectedAreaObjectForm;
         set {
             _selectedAreaObjectForm = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(IsSelectedAreaObject));
+            OnPropertyChanged(nameof(Title));
+            OnPropertyChanged(nameof(TitleAssociatedObjects));
+
+            // TODO: Otazka na konzultaciu, bez Distinct() zobrazuje Duplicity (lebo 2 body) a blbne zobrazenie zoznamu
+            if (SelectedAreaObject != null)
+            {
+                AssociatedObjects = new ObservableCollection<AreaObject>(SelectedAreaObject.AssociatedObjects.Distinct());
+            }
         }
     }
+    
+    public bool IsSelectedAreaObject => SelectedAreaObject != null;
 
-    public ObservableCollection<AreaObject> AreaObjects { get; }
+    public string Title => SelectedAreaObject == null ? string.Empty : "Úprava " + (SelectedAreaObject.Type == AreaObjectType.RealEstate ? "nehnuteľnosti" : "parcely");
+
+    public string TitleAssociatedObjects => SelectedAreaObject == null ? string.Empty : (SelectedAreaObject.Type == AreaObjectType.RealEstate ? "Parcely" : "Nehnut.");
+    
+    public AreaObjectForm AreaObjectQuery { get; set; } = new() { Type = AreaObjectType.Unknown };
+
+    public ObservableCollection<AreaObject> AreaObjects
+    {
+        get => _areaObjects;
+        set {
+            _areaObjects = value;
+            OnPropertyChanged();
+        }
+    }
+    
+    public ObservableCollection<AreaObject> AssociatedObjects
+    {
+        get => _associatedObjects;
+        set {
+            _associatedObjects = value;
+            OnPropertyChanged();
+        }
+    }
+    
+    public Dictionary<AreaObjectType, string> ObjectTypesFilter { get; set; } = new()
+    {
+        { AreaObjectType.Unknown, "Ľubovoľný" },
+        { AreaObjectType.Parcel, "Parcela" },
+        { AreaObjectType.RealEstate, "Nehnuteľnosť" }
+    };
+
+    public Dictionary<AreaObjectType, string> ObjectTypes { get; set; } = new()
+    {
+        { AreaObjectType.Parcel, "Parcela" },
+        { AreaObjectType.RealEstate, "Nehnuteľnosť" }
+    };
 
     public MainWindowViewModel()
     {
-        var areaObjects = new List<AreaObject> 
-        {
-            new AreaObject()
-            {
-                Type = AreaObjectType.Parcel,
-                Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus nec nunc.",
-                Id = 1,
-                CoordinateA = new(1, 2),
-                CoordinateB = new(3, 4)
-            },
-            new AreaObject()
-            {
-                Type = AreaObjectType.RealEstate,
-                Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus nec nunc.",
-                Id = 2,
-                CoordinateA = new(5, 6),
-                CoordinateB = new(7, 8)
-            },
-            new AreaObject()
-            {
-                Type = AreaObjectType.RealEstate,
-                Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus nec nunc.",
-                Id = 3,
-                CoordinateA = new(9, 10),
-                CoordinateB = new(11, 12)
-            },
-            new AreaObject()
-            {
-                Type = AreaObjectType.Parcel,
-                Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus nec nunc.",
-                Id = 4,
-                CoordinateA = new(13, 14),
-                CoordinateB = new(15, 16)
-            },
-            new AreaObject()
-            {
-                Type = AreaObjectType.Parcel,
-                Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus nec nunc.",
-                Id = 5,
-                CoordinateA = new(17, 18),
-                CoordinateB = new(19, 20)
-            },
-            new AreaObject()
-            {
-                Type = AreaObjectType.Parcel,
-                Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus nec nunc.",
-                Id = 6,
-                CoordinateA = new(21, 22),
-                CoordinateB = new(23, 24)
-            },
-            new AreaObject()
-            {
-                Type = AreaObjectType.RealEstate,
-                Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus nec nunc.",
-                Id = 7,
-                CoordinateA = new(25, 26),
-                CoordinateB = new(27, 28)
-            }
-        };
-        AreaObjects = new ObservableCollection<AreaObject>(areaObjects);
+        AreaObjects = new ObservableCollection<AreaObject>();
+    }
+    
+    public void RefreshSelectedAreaObject()
+    {
+        // situacia ked mame selectnuty objekt a pridame opacny,
+        // ktory s nim koliduje, aby sa hned zobrazil v zozname asociovanych objektov
+        SelectedAreaObject = SelectedAreaObject;
+    }
+    
+    public void RefreshAreaObjects()
+    {
+        var selected = SelectedAreaObject;
+        AreaObjects = new ObservableCollection<AreaObject>(AreaObjects);
+        SelectedAreaObject = selected;
     }
 }

@@ -28,17 +28,13 @@ kdtree.Insert(new(40, 20), area1);
 kdtree.Insert(new(0, 0), area2);
 kdtree.Insert(new(40, 20), area2);
 
-/*
 var testValue = kdtree.FindByKey(new(40, 20));
 foreach (var value in testValue)
 {
     Console.WriteLine(value);
 }
-*/
 
-kdtree.ExecuteInOrder(key =>
+kdtree.ExecuteInOrder((GPSCoordinate key) =>
 {
     Console.WriteLine(key);
 });
-
-

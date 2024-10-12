@@ -3,8 +3,9 @@
         xmlns:vm="using:AUS.GUI.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="450"
-        MinWidth="1100"
+        mc:Ignorable="d" d:DesignWidth="1400" d:DesignHeight="500"
+        MinWidth="1400"
+        MinHeight="500"
         x:Class="AUS.GUI.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         WindowStartupLocation="CenterScreen"
@@ -16,7 +17,7 @@
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
+        <vm:MainWindowViewModel />
     </Design.DataContext>
     
     <Panel>
@@ -42,35 +43,39 @@
                   ColumnDefinitions="Auto,Auto,*,Auto,160,Auto,100,100,Auto,100,100,Auto, Auto"
                   RowDefinitions="Auto">
                 
-                <Button Grid.Row="0" Grid.Column="0" Content="+ Pridať" Margin="10 0 0 0" Click="CreateButton_OnClick" />
-                <Button Grid.Row="0" Grid.Column="1" Content="+ Generator" Margin="10 0 0 0" Click="GenerateButton_OnClick" />
-                
-                <Label Grid.Row="0" Grid.Column="3" VerticalAlignment="Center">Typ objektu:</Label>
-                <StackPanel Grid.Row="0" Grid.Column="4">
-                    <ComboBox SelectedIndex="0" MaxDropDownHeight="500" Width="140" Margin="5 0">
-                        <ComboBoxItem>Nehnuteľnosť</ComboBoxItem>
-                        <ComboBoxItem>Parcela</ComboBoxItem>
-                        <ComboBoxItem>Ľubovoľný</ComboBoxItem>
-                    </ComboBox>
+                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+                    <Button Content="+ Pridať" Margin="10 0 0 0" Click="CreateButton_OnClick" />
+                    <Button Content="+ Generator" Margin="10 0 0 0" Click="GenerateButton_OnClick" />
+                    <Button IsEnabled="False" Content="Uložiť ako..." Margin="10 0 0 0" Click="SaveToFileButton_OnClick" />
+                    <Button IsEnabled="False" Content="Načítať zo súboru" Margin="10 0 0 0" Click="LoadFromFileButton_OnClick" />
                 </StackPanel>
                 
+                <Label Grid.Row="0" Grid.Column="3" VerticalAlignment="Center">Typ objektu:</Label>
+                <ComboBox Grid.Row="0" Grid.Column="4"
+                          SelectedValue="{Binding AreaObjectQuery.Type}"
+                          ItemsSource="{Binding ObjectTypesFilter}"
+                          DisplayMemberBinding="{Binding Value}"
+                          SelectedValueBinding="{Binding Key}"
+                          MaxDropDownHeight="500"
+                          Width="140"
+                          HorizontalAlignment="Stretch"
+                          Margin="5 0" />
+                
                 <Label Grid.Row="0" Grid.Column="5" Margin="10 0 0 0" VerticalAlignment="Center">Bod 1:</Label>
-                <TextBox Grid.Row="0" Grid.Column="6" Watermark="X" Margin="5 0"/>
-                <TextBox Grid.Row="0" Grid.Column="7" Watermark="Y" Margin="5 0"/>
+                <TextBox Grid.Row="0" Grid.Column="6" Watermark="X" Margin="5 0" Text="{Binding AreaObjectQuery.CoordinateAX}" />
+                <TextBox Grid.Row="0" Grid.Column="7" Watermark="Y" Margin="5 0" Text="{Binding AreaObjectQuery.CoordinateAY}" />
                 
                 <Label Grid.Row="0" Grid.Column="8" Margin="20 0 0 0" VerticalAlignment="Center">Bod 2:</Label>
-                <TextBox Grid.Row="0" Grid.Column="9" Watermark="X" Margin="5 0"/>
-                <TextBox Grid.Row="0" Grid.Column="10" Watermark="Y" Margin="5 0"/>
+                <TextBox Grid.Row="0" Grid.Column="9" Watermark="X" Margin="5 0" Text="{Binding AreaObjectQuery.CoordinateBX}" />
+                <TextBox Grid.Row="0" Grid.Column="10" Watermark="Y" Margin="5 0" Text="{Binding AreaObjectQuery.CoordinateBY}" />
                 
-                <Button Grid.Row="0" Grid.Column="11" Content="Vyhľadať" Margin="5 0 10 0" />
+                <Button Grid.Row="0" Grid.Column="11" Content="Vyhľadať" Margin="5 0 10 0" Click="SearchButton_OnClick" />
             </Grid>
 
             <DataGrid Grid.Row="1" Grid.Column="0"
                 Margin="10" ItemsSource="{Binding AreaObjects}"
-                DoubleTapped="InputElement_OnDoubleTapped"
                 SelectionMode="Single"
                 SelectedItem="{Binding SelectedAreaObject}"
-                SelectionChanged="DataGrid_OnSelectionChanged"
                 IsReadOnly="True" 
                 GridLinesVisibility="All"
                 BorderThickness="1" BorderBrush="Gray">
@@ -91,27 +96,34 @@
                 </DataGrid.Columns>
             </DataGrid>
             
-            <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" 
+            <Grid Grid.Row="1" Grid.Column="1" 
+                  IsVisible="{Binding IsSelectedAreaObject}"
+                  HorizontalAlignment="Stretch" 
                   VerticalAlignment="Stretch"
-                  ColumnDefinitions="50,*,*"
+                  ColumnDefinitions="60,*,*"
                   Margin="10"
-                  RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto">
+                  RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,*,Auto">
                 
-                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Úprava objektu" FontSize="20" FontWeight="Bold" Margin="0 5 0 5"/>
+                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding Title}" FontSize="20" FontWeight="Bold" Margin="0 5 0 5"/>
                 
                 <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Typ</Label>
-                <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" SelectedItem="{Binding SelectedAreaObjectForm.Type}" MaxDropDownHeight="500" HorizontalAlignment="Stretch" Margin="5 10 5 5">
-                    <ComboBoxItem>Nehnuteľnosť</ComboBoxItem>
-                    <ComboBoxItem>Parcela</ComboBoxItem>
-                </ComboBox>
+                <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                          IsEnabled="False"
+                          SelectedValue="{Binding SelectedAreaObjectForm.Type}"
+                          ItemsSource="{Binding ObjectTypes}"
+                          DisplayMemberBinding="{Binding Value}"
+                          SelectedValueBinding="{Binding Key}"
+                          MaxDropDownHeight="500"
+                          HorizontalAlignment="Stretch"
+                          Margin="5 10 5 5" />
                 
                 <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Bod 1</Label>
-                <TextBox Grid.Row="2" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding SelectedAreaObjectForm.CoordinateAX}" />
-                <TextBox Grid.Row="2" Grid.Column="2" Watermark="Y" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding SelectedAreaObjectForm.CoordinateAY}" />
+                <TextBox IsReadOnly="True" Grid.Row="2" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObjectForm.CoordinateAX}" />
+                <TextBox IsReadOnly="True" Grid.Row="2" Grid.Column="2" Watermark="Y" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObjectForm.CoordinateAY}" />
                 
                 <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Bod 2</Label>
-                <TextBox Grid.Row="3" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding SelectedAreaObjectForm.CoordinateBX}" />
-                <TextBox Grid.Row="3" Grid.Column="2" Watermark="Y" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding SelectedAreaObjectForm.CoordinateBY}" />
+                <TextBox IsReadOnly="True" Grid.Row="3" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObjectForm.CoordinateBX}" />
+                <TextBox IsReadOnly="True" Grid.Row="3" Grid.Column="2" Watermark="Y" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObjectForm.CoordinateBY}" />
                 
                 <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">ID</Label>
                 <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Watermark="ID" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding SelectedAreaObjectForm.Id}" />
@@ -119,9 +131,34 @@
                 <Label Grid.Row="5" Grid.Column="0" Margin="0 12 0 0">Popis</Label>
                 <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Watermark="Popis" Margin="5 10 5 5" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding SelectedAreaObjectForm.Description}" />
                 
-                <StackPanel Grid.Row="6" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button IsEnabled="False" Content="Odstrániť" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" />
-                    <Button IsEnabled="False" Content="Uložiť" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" />
+                <TextBlock Grid.Row="6" Grid.Column="0" Margin="0 12 0 0" Text="{Binding TitleAssociatedObjects}" />
+                <DataGrid Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2"
+                          Margin="5 10 5 5" ItemsSource="{Binding AssociatedObjects}"
+                          SelectionMode="Single"
+                          SelectionChanged="DataGrid_OnSelectionAssociatedObjectChanged"
+                          IsReadOnly="True" 
+                          GridLinesVisibility="All"
+                          BorderThickness="1" BorderBrush="Gray">
+                
+                    <DataGrid.Styles>
+                        <Style Selector="DataGridColumnHeader">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                        </Style>
+                    </DataGrid.Styles>
+                
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Typ objektu" Width="Auto" Binding="{Binding DisplayType}" />
+                        <DataGridTextColumn Header="ID" Width="Auto" Binding="{Binding Id}" />
+                        <DataGridTextColumn Header="Bod A" Width="Auto" Binding="{Binding CoordinateA}" />
+                        <DataGridTextColumn Header="Bod B" Width="Auto" Binding="{Binding CoordinateB}" />
+                        <DataGridTextColumn Header="Popis" Width="*" Binding="{Binding Description}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                
+                <StackPanel Grid.Row="7" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button IsEnabled="False" Content="Odstrániť" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="DeleteAreaObjectButton_OnClick" />
+                    <Button Content="Uložiť" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="SaveAreaObjectButton_OnClick" />
                 </StackPanel>
             </Grid>
             

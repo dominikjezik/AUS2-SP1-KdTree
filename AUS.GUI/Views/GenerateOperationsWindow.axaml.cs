@@ -1,5 +1,6 @@
 using System;
 using AUS.GUI.Models;
+using AUS.GUI.ViewModels;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
@@ -7,21 +8,32 @@ namespace AUS.GUI.Views;
 
 public partial class GenerateOperationsWindow : Window
 {
-    public AreaObjectForm AreaObjectForm { get; private set; } = new();
-    
     // event property for the SaveButton_OnClick event
     public event EventHandler<GenerateOperationsModel>? GenerateOperations;
+    
+    private readonly GenerateOperationsViewModel _viewModel;
     
     public GenerateOperationsWindow()
     {
         InitializeComponent();
-        DataContext = this;
+        _viewModel = new GenerateOperationsViewModel();
+        DataContext = _viewModel;
     }
 
     private void GenerateButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        // TODO take from GUI
-        GenerateOperations?.Invoke(this, new() { Count = 10, ProbabilityOfInsert = 1});
+        GenerateOperations?.Invoke(this, new()
+        {
+            Count = _viewModel.CountOfOperations, 
+            ProbabilityOfInsert = _viewModel.CountOfOperations,
+            MinX = _viewModel.MinX,
+            MaxX = _viewModel.MaxX,
+            MinY = _viewModel.MinY,
+            MaxY = _viewModel.MaxY,
+            NumberOfDecimalPlaces = _viewModel.NumberOfDecimalPlaces,
+            GenerateRandomDescription = _viewModel.GenerateRandomDescription
+        });
+        
         Close();
     }
 }

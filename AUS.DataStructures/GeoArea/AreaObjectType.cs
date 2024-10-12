@@ -3,5 +3,6 @@
 public enum AreaObjectType
 {
     RealEstate,
-    Parcel
+    Parcel,
+    Unknown
 }

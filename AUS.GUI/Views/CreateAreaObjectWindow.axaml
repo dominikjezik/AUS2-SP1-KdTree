@@ -36,21 +36,27 @@
             <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Vytvorenie nového objektu" FontSize="20" FontWeight="Bold" Margin="0 5 0 5"/>
             
             <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Typ</Label>
-            <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" SelectedIndex="0" MaxDropDownHeight="500" HorizontalAlignment="Stretch" Margin="5 10 5 5">
-                <ComboBoxItem>Nehnuteľnosť</ComboBoxItem>
-                <ComboBoxItem>Parcela</ComboBoxItem>
-            </ComboBox>
+            
+            <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" 
+                      SelectedIndex="0" 
+                      MaxDropDownHeight="500" 
+                      HorizontalAlignment="Stretch" 
+                      Margin="5 10 5 5"
+                      SelectedValue="{Binding AreaObjectForm.Type}"
+                      ItemsSource="{Binding ObjectTypes}"
+                      DisplayMemberBinding="{Binding Value}"
+                      SelectedValueBinding="{Binding Key}" />
             
             <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Bod 1</Label>
-            <TextBox Grid.Row="2" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding AreaObjectForm.CoordinateAX}" />
-            <TextBox Grid.Row="2" Grid.Column="2" Watermark="Y" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding AreaObjectForm.CoordinateAY}" />
+            <TextBox Grid.Row="2" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding AreaObjectForm.CoordinateAX}" />
+            <TextBox Grid.Row="2" Grid.Column="2" Watermark="Y" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding AreaObjectForm.CoordinateAY}" />
             
             <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Bod 2</Label>
-            <TextBox Grid.Row="3" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding AreaObjectForm.CoordinateBX}" />
-            <TextBox Grid.Row="3" Grid.Column="2" Watermark="Y" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding AreaObjectForm.CoordinateBY}" />
+            <TextBox Grid.Row="3" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding AreaObjectForm.CoordinateBX}" />
+            <TextBox Grid.Row="3" Grid.Column="2" Watermark="Y" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding AreaObjectForm.CoordinateBY}" />
             
             <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">ID</Label>
-            <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Watermark="ID" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding AreaObjectForm.Id}" />
+            <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Watermark="ID" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding AreaObjectForm.Id}" />
             
             <Label Grid.Row="5" Grid.Column="0" Margin="0 12 0 0">Popis</Label>
             <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Watermark="Popis" Margin="5 10 5 5" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding AreaObjectForm.Description}" />

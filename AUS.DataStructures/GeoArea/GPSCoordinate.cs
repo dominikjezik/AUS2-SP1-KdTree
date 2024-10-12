@@ -41,6 +41,6 @@ public record GPSCoordinate(double X, double Y) : IKDTreeKeyComparable<GPSCoordi
 
     public override string ToString()
     {
-        return $"[{X}, {Y}]";
+        return $"[{X}; {Y}]";
     }
 }

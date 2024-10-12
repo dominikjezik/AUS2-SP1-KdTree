@@ -70,14 +70,8 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
         {
             return [];
         }
-
-        return foundNode!.Data;
-    }
-
-    public List<TData> FindByEdgeKeys(TKey keysA, TKey keysB)
-    {
-        // TODO: Toto by malo byt iba bodove vyhladavanie cize asi odstranit lebo staci 2 krat zavolat find
-        throw new NotImplementedException();
+        
+        return new List<TData>(foundNode!.Data);
     }
 
     public void Insert(TKey keyForInsert, TData data)
@@ -102,14 +96,14 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
             // Vlozenie do lava
             var newNode = new KDTreeNode<TKey, TData>(keyForInsert, data);
             foundNode.LeftNode = newNode;
-            newNode.ParentNode = foundNode.LeftNode;
+            newNode.ParentNode = foundNode;
         }
         else
         {
             // Vlozenie do prava
             var newNode = new KDTreeNode<TKey, TData>(keyForInsert, data);
             foundNode.RightNode = newNode;
-            newNode.ParentNode = foundNode.RightNode;
+            newNode.ParentNode = foundNode;
         }
     }
 
@@ -129,6 +123,21 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
         {
             ExecuteInOrder(actionToExec, node.LeftNode);
             actionToExec(node.Key);
+            ExecuteInOrder(actionToExec, node.RightNode);
+        }
+    }
+    
+    public void ExecuteInOrder(Action<List<TData>> actionToExec)
+    {
+        ExecuteInOrder(actionToExec, _root);
+    }
+    
+    private void ExecuteInOrder(Action<List<TData>> actionToExec, KDTreeNode<TKey, TData>? node)
+    {
+        if (node != null)
+        {
+            ExecuteInOrder(actionToExec, node.LeftNode);
+            actionToExec(node.Data);
             ExecuteInOrder(actionToExec, node.RightNode);
         }
     }

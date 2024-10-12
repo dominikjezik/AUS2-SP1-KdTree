@@ -2,15 +2,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:views="clr-namespace:AUS.GUI.Views"
-        mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="250"
-        MinWidth="300"
+        xmlns:vm="using:AUS.GUI.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="520"
         Width="350"
-        MinHeight="250"
-        Height="250"
+        Height="520"
+        CanResize="False"
         WindowStartupLocation="CenterOwner"
         x:Class="AUS.GUI.Views.GenerateOperationsWindow"
-        x:DataType="views:GenerateOperationsWindow"
+        x:DataType="vm:GenerateOperationsViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="AUS S1"
         TransparencyLevelHint="AcrylicBlur"
@@ -31,20 +30,39 @@
               VerticalAlignment="Stretch"
               ColumnDefinitions="110,*,*"
               Margin="10"
-              RowDefinitions="Auto,Auto,Auto,Auto, Auto">
+              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
             
             <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Generátor operácií" FontSize="20" FontWeight="Bold" Margin="0 5 0 5"/>
             
             <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Počet operácií</Label>
-            <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Watermark="1000" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding AreaObjectForm.CoordinateAX}" />
+            <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Watermark="1000" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding CountOfOperations}" />
 
-            <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Operácie</Label>
-            <TextBox Grid.Row="2" Grid.Column="1" IsEnabled="False" Watermark="0.5" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding AreaObjectForm.CoordinateAX}" />
-            <TextBox Grid.Row="2" Grid.Column="2" IsEnabled="False" Watermark="0.5" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding AreaObjectForm.CoordinateAX}" />
-
-            <Slider Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Minimum="0" Maximum="1" Value="0.5" Margin="5 10 5 5" />
+            <Label Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 5 0 0">Vloženie</Label>
+            <Label Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 5 0 0">Zmazanie</Label>
             
-            <Button Grid.Row="4" Grid.Column="2" Content="Generuj" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="GenerateButton_OnClick" />
+            <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Operácie</Label>
+            <TextBox Grid.Row="3" Grid.Column="1" IsEnabled="True" Watermark="0.5" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding ProbabilityOfInsert, StringFormat=F3}" />
+            <TextBox Grid.Row="3" Grid.Column="2" IsEnabled="True" Watermark="0.5" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding ProbabilityOfDelete, StringFormat=F3}" />
+
+            <Slider Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Minimum="0" Maximum="1" Value="{Binding ProbabilityOfInsert}" TickFrequency="0.01" Margin="5 10 5 5" />
+            
+            <Separator Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Margin="5 10 5 5" />
+            <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0 5 0 0">Operácia Vloženie</Label>
+            
+            <Label Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Rozsah X</Label>
+            <TextBox Grid.Row="7" Grid.Column="1" Watermark="1000" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding MinX}" />
+            <TextBox Grid.Row="7" Grid.Column="2" Watermark="1000" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding MaxX}" />
+            
+            <Label Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Rozsah Y</Label>
+            <TextBox Grid.Row="8" Grid.Column="1" Watermark="1000" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding MinY}" />
+            <TextBox Grid.Row="8" Grid.Column="2" Watermark="1000" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding MaxY}" />
+            
+            <Label Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0 5 0 0">Počet desatinný miest súradníc</Label>
+            <TextBox Grid.Row="9" Grid.Column="2" Watermark="2" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding NumberOfDecimalPlaces}" IsEnabled="{Binding GenerateRandomDescription}" />
+            
+            <CheckBox Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" Content="Generovať náhodný popis?" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" IsChecked="{Binding GenerateRandomDescription}" />
+            
+            <Button Grid.Row="11" Grid.Column="2" Content="Generuj" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="GenerateButton_OnClick" />
         </Grid>
         
     </Panel>
