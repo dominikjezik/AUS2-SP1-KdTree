@@ -3,7 +3,7 @@
 public class GenerateOperationsViewModel : ViewModelBase
 {
     private int _countOfOperations = 1000;
-    private double _probabilityOfInsert = 0.5;
+    private double _probabilityOfOverlay = 0.5;
     
     public int CountOfOperations
     {
@@ -15,33 +15,21 @@ public class GenerateOperationsViewModel : ViewModelBase
         }
     }
     
-    public double ProbabilityOfInsert
+    public double ProbabilityOfOverlay
     {
-        get => _probabilityOfInsert;
+        get => _probabilityOfOverlay;
         set
         {
-            _probabilityOfInsert = value;
+            _probabilityOfOverlay = value;
             OnPropertyChanged();
-            OnPropertyChanged(nameof(ProbabilityOfDelete));
         }
     }
 
-    public double ProbabilityOfDelete
-    {
-        get => 1 - ProbabilityOfInsert;
-        set
-        {
-            ProbabilityOfInsert = 1 - value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(ProbabilityOfInsert));
-        }
-    }
-
-    public int MinX { get; set; } = -100;
+    public int MinX { get; set; } = 100;
     
     public int MaxX { get; set; } = 100;
 
-    public int MinY { get; set; } = -100;
+    public int MinY { get; set; } = 100;
     
     public int MaxY { get; set; } = 100;
 

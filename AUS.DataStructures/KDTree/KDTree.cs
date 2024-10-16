@@ -2,7 +2,7 @@
 
 public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
 {
-    private int _numberOfDimension;
+    private readonly int _numberOfDimension;
 
     private KDTreeNode<TKey, TData>? _root;
 

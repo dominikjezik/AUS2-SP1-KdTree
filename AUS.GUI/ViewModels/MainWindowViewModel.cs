@@ -8,22 +8,29 @@ namespace AUS.GUI.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    private AreaObject? _selectedAreaObject;
-    private AreaObjectForm? _selectedAreaObjectForm;
-    private ObservableCollection<AreaObject> _areaObjects;
-    private ObservableCollection<AreaObject> _associatedObjects;
+    private AreaObjectDTO? _selectedAreaObject;
+    private ObservableCollection<AreaObjectDTO> _areaObjects;
+    private ObservableCollection<AreaObjectDTO> _associatedObjects;
     
-    public AreaObject? SelectedAreaObject
+    public AreaObjectDTO? SelectedAreaObject
     {
         get => _selectedAreaObject;
         set
         {
             _selectedAreaObject = value;
-            SelectedAreaObjectForm = value?.ToAreaObjectForm();
             OnPropertyChanged();
+            OnPropertyChanged(nameof(IsSelectedAreaObject));
+            OnPropertyChanged(nameof(Title));
+            OnPropertyChanged(nameof(TitleAssociatedObjects));
+            
+            if (SelectedAreaObject != null)
+            {
+                AssociatedObjects = new ObservableCollection<AreaObjectDTO>(SelectedAreaObject.AssociatedObjects);
+            }
         }
     }
 
+    /*
     public AreaObjectForm? SelectedAreaObjectForm
     {
         get => _selectedAreaObjectForm;
@@ -37,10 +44,12 @@ public class MainWindowViewModel : ViewModelBase
             // TODO: Otazka na konzultaciu, bez Distinct() zobrazuje Duplicity (lebo 2 body) a blbne zobrazenie zoznamu
             if (SelectedAreaObject != null)
             {
-                AssociatedObjects = new ObservableCollection<AreaObject>(SelectedAreaObject.AssociatedObjects.Distinct());
+                // TODO
+                //AssociatedObjects = new ObservableCollection<AreaObjectDTO>(SelectedAreaObject.AssociatedObjects.Distinct());
             }
         }
     }
+    */
     
     public bool IsSelectedAreaObject => SelectedAreaObject != null;
 
@@ -48,9 +57,9 @@ public class MainWindowViewModel : ViewModelBase
 
     public string TitleAssociatedObjects => SelectedAreaObject == null ? string.Empty : (SelectedAreaObject.Type == AreaObjectType.RealEstate ? "Parcely" : "Nehnut.");
     
-    public AreaObjectForm AreaObjectQuery { get; set; } = new() { Type = AreaObjectType.Unknown };
+    public AreaObjectDTO AreaObjectQuery { get; set; } = new() { Type = AreaObjectType.Unknown };
 
-    public ObservableCollection<AreaObject> AreaObjects
+    public ObservableCollection<AreaObjectDTO> AreaObjects
     {
         get => _areaObjects;
         set {
@@ -59,7 +68,7 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
     
-    public ObservableCollection<AreaObject> AssociatedObjects
+    public ObservableCollection<AreaObjectDTO> AssociatedObjects
     {
         get => _associatedObjects;
         set {
@@ -80,10 +89,14 @@ public class MainWindowViewModel : ViewModelBase
         { AreaObjectType.Parcel, "Parcela" },
         { AreaObjectType.RealEstate, "Nehnuteľnosť" }
     };
+    
+    public List<char> CoordinateXDirection { get; set; } = new() { 'E', 'W' };
+    
+    public List<char> CoordinateYDirection { get; set; } = new() { 'N', 'S' };
 
     public MainWindowViewModel()
     {
-        AreaObjects = new ObservableCollection<AreaObject>();
+        AreaObjects = new ObservableCollection<AreaObjectDTO>();
     }
     
     public void RefreshSelectedAreaObject()
@@ -96,7 +109,7 @@ public class MainWindowViewModel : ViewModelBase
     public void RefreshAreaObjects()
     {
         var selected = SelectedAreaObject;
-        AreaObjects = new ObservableCollection<AreaObject>(AreaObjects);
+        AreaObjects = new ObservableCollection<AreaObjectDTO>(AreaObjects);
         SelectedAreaObject = selected;
     }
 }

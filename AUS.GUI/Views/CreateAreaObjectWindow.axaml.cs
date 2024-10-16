@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using AUS.DataStructures.GeoArea;
-using AUS.GUI.Models;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
@@ -9,7 +8,7 @@ namespace AUS.GUI.Views;
 
 public partial class CreateAreaObjectWindow : Window
 {
-    public AreaObjectForm AreaObjectForm { get; private set; } = new();
+    public AreaObjectDTO AreaObject { get; private set; } = new();
     
     public Dictionary<AreaObjectType, string> ObjectTypes { get; set; } = new()
     {
@@ -17,8 +16,11 @@ public partial class CreateAreaObjectWindow : Window
         { AreaObjectType.RealEstate, "Nehnuteľnosť" }
     };
     
-    // event property for the SaveButton_OnClick event
-    public event EventHandler<AreaObjectForm>? CreateAreaObject;
+    public List<char> CoordinateXDirection { get; set; } = new() { 'E', 'W' };
+    
+    public List<char> CoordinateYDirection { get; set; } = new() { 'N', 'S' };
+    
+    public event EventHandler<AreaObjectDTO>? CreateAreaObject;
     
     public CreateAreaObjectWindow()
     {
@@ -28,7 +30,7 @@ public partial class CreateAreaObjectWindow : Window
 
     private void SaveButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        CreateAreaObject?.Invoke(this, AreaObjectForm);
+        CreateAreaObject?.Invoke(this, AreaObject);
         Close();
     }
 }

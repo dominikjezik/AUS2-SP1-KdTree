@@ -2,9 +2,9 @@
 
 public class GenerateOperationsModel
 {
-    public int Count { get; set; }
-
-    public double ProbabilityOfInsert { get; set; }
+    public int CountOfOperations { get; set; }
+    
+    public double ProbabilityOfOverlay { get; set; }
     
     public int MinX { get; set; } = -100;
     

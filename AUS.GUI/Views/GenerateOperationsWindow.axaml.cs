@@ -24,8 +24,8 @@ public partial class GenerateOperationsWindow : Window
     {
         GenerateOperations?.Invoke(this, new()
         {
-            Count = _viewModel.CountOfOperations, 
-            ProbabilityOfInsert = _viewModel.CountOfOperations,
+            CountOfOperations = _viewModel.CountOfOperations, 
+            ProbabilityOfOverlay = _viewModel.ProbabilityOfOverlay,
             MinX = _viewModel.MinX,
             MaxX = _viewModel.MaxX,
             MinY = _viewModel.MinY,

@@ -40,8 +40,8 @@
                   HorizontalAlignment="Stretch" 
                   VerticalAlignment="Top"
                   Margin="0 10 0 0"
-                  ColumnDefinitions="Auto,Auto,*,Auto,160,Auto,100,100,Auto,100,100,Auto, Auto"
-                  RowDefinitions="Auto">
+                  ColumnDefinitions="Auto,Auto,*,Auto,160,Auto,100,90,100,75,Auto,Auto"
+                  RowDefinitions="Auto,Auto">
                 
                 <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
                     <Button Content="+ Pridať" Margin="10 0 0 0" Click="CreateButton_OnClick" />
@@ -61,13 +61,43 @@
                           HorizontalAlignment="Stretch"
                           Margin="5 0" />
                 
-                <Label Grid.Row="0" Grid.Column="5" Margin="10 0 0 0" VerticalAlignment="Center">Bod 1:</Label>
+                <Label Grid.Row="0" Grid.Column="5" Margin="20 0 0 0" VerticalAlignment="Center">Bod 1:</Label>
                 <TextBox Grid.Row="0" Grid.Column="6" Watermark="X" Margin="5 0" Text="{Binding AreaObjectQuery.CoordinateAX}" />
-                <TextBox Grid.Row="0" Grid.Column="7" Watermark="Y" Margin="5 0" Text="{Binding AreaObjectQuery.CoordinateAY}" />
+                <ComboBox Grid.Row="0" Grid.Column="7"
+                          SelectedIndex="0"
+                          MaxDropDownHeight="500"
+                          HorizontalAlignment="Stretch" 
+                          Margin="5 0 20 0"
+                          SelectedValue="{Binding AreaObjectQuery.CoordinateAXDirection}"
+                          ItemsSource="{Binding CoordinateXDirection}" />
                 
-                <Label Grid.Row="0" Grid.Column="8" Margin="20 0 0 0" VerticalAlignment="Center">Bod 2:</Label>
-                <TextBox Grid.Row="0" Grid.Column="9" Watermark="X" Margin="5 0" Text="{Binding AreaObjectQuery.CoordinateBX}" />
-                <TextBox Grid.Row="0" Grid.Column="10" Watermark="Y" Margin="5 0" Text="{Binding AreaObjectQuery.CoordinateBY}" />
+                <TextBox Grid.Row="0" Grid.Column="8" Watermark="Y" Margin="5 0" Text="{Binding AreaObjectQuery.CoordinateAY}" />
+                <ComboBox Grid.Row="0" Grid.Column="9"
+                          SelectedIndex="0"
+                          MaxDropDownHeight="500"
+                          HorizontalAlignment="Stretch" 
+                          Margin="5 0 5 0"
+                          SelectedValue="{Binding AreaObjectQuery.CoordinateAYDirection}"
+                          ItemsSource="{Binding CoordinateYDirection}" />
+                
+                <Label Grid.Row="1" Grid.Column="5" Margin="20 10 0 0" VerticalAlignment="Center">Bod 2:</Label>
+                <TextBox Grid.Row="1" Grid.Column="6" Watermark="X" Margin="5 10 5 0" Text="{Binding AreaObjectQuery.CoordinateBX}" />
+                <ComboBox Grid.Row="1" Grid.Column="7"
+                          SelectedIndex="0"
+                          MaxDropDownHeight="500"
+                          HorizontalAlignment="Stretch" 
+                          Margin="5 10 20 0"
+                          SelectedValue="{Binding AreaObjectQuery.CoordinateBXDirection}"
+                          ItemsSource="{Binding CoordinateXDirection}" />
+                
+                <TextBox Grid.Row="1" Grid.Column="8" Watermark="Y" Margin="5 10 5 0" Text="{Binding AreaObjectQuery.CoordinateBY}" />
+                <ComboBox Grid.Row="1" Grid.Column="9"
+                          SelectedIndex="0"
+                          MaxDropDownHeight="500"
+                          HorizontalAlignment="Stretch" 
+                          Margin="5 10 5 0"
+                          SelectedValue="{Binding AreaObjectQuery.CoordinateAYDirection}"
+                          ItemsSource="{Binding CoordinateYDirection}" />
                 
                 <Button Grid.Row="0" Grid.Column="11" Content="Vyhľadať" Margin="5 0 10 0" Click="SearchButton_OnClick" />
             </Grid>
@@ -90,8 +120,8 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Typ objektu" Width="Auto" Binding="{Binding DisplayType}" />
                     <DataGridTextColumn Header="ID" Width="Auto" Binding="{Binding Id}" />
-                    <DataGridTextColumn Header="Bod A" Width="Auto" Binding="{Binding CoordinateA}" />
-                    <DataGridTextColumn Header="Bod B" Width="Auto" Binding="{Binding CoordinateB}" />
+                    <DataGridTextColumn Header="Bod A" Width="Auto" Binding="{Binding DisplayCoordinateA}" />
+                    <DataGridTextColumn Header="Bod B" Width="Auto" Binding="{Binding DisplayCoordinateB}" />
                     <DataGridTextColumn Header="Popis" Width="*" Binding="{Binding Description}" />
                 </DataGrid.Columns>
             </DataGrid>
@@ -100,16 +130,16 @@
                   IsVisible="{Binding IsSelectedAreaObject}"
                   HorizontalAlignment="Stretch" 
                   VerticalAlignment="Stretch"
-                  ColumnDefinitions="60,*,*"
+                  ColumnDefinitions="60,*,100,*,75"
                   Margin="10"
                   RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,*,Auto">
                 
-                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding Title}" FontSize="20" FontWeight="Bold" Margin="0 5 0 5"/>
+                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Text="{Binding Title}" FontSize="20" FontWeight="Bold" Margin="0 5 0 5"/>
                 
                 <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Typ</Label>
-                <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4"
                           IsEnabled="False"
-                          SelectedValue="{Binding SelectedAreaObjectForm.Type}"
+                          SelectedValue="{Binding SelectedAreaObject.Type}"
                           ItemsSource="{Binding ObjectTypes}"
                           DisplayMemberBinding="{Binding Value}"
                           SelectedValueBinding="{Binding Key}"
@@ -118,21 +148,51 @@
                           Margin="5 10 5 5" />
                 
                 <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Bod 1</Label>
-                <TextBox IsReadOnly="True" Grid.Row="2" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObjectForm.CoordinateAX}" />
-                <TextBox IsReadOnly="True" Grid.Row="2" Grid.Column="2" Watermark="Y" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObjectForm.CoordinateAY}" />
+                <TextBox IsReadOnly="True" Grid.Row="2" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObject.CoordinateAX}" />
+                <ComboBox Grid.Row="2" Grid.Column="2"
+                          SelectedIndex="0"
+                          MaxDropDownHeight="500"
+                          HorizontalAlignment="Stretch" 
+                          Margin="5 10 30 5"
+                          SelectedValue="{Binding SelectedAreaObject.CoordinateAXDirection}"
+                          ItemsSource="{Binding CoordinateXDirection}" />
+                
+                <TextBox Grid.Row="2" Grid.Column="3" Watermark="Y" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObject.CoordinateAY}" />
+                <ComboBox Grid.Row="2" Grid.Column="4"
+                          SelectedIndex="0"
+                          MaxDropDownHeight="500"
+                          HorizontalAlignment="Stretch" 
+                          Margin="5 10 5 5"
+                          SelectedValue="{Binding SelectedAreaObject.CoordinateAYDirection}"
+                          ItemsSource="{Binding CoordinateYDirection}" />
                 
                 <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Bod 2</Label>
-                <TextBox IsReadOnly="True" Grid.Row="3" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObjectForm.CoordinateBX}" />
-                <TextBox IsReadOnly="True" Grid.Row="3" Grid.Column="2" Watermark="Y" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObjectForm.CoordinateBY}" />
+                <TextBox Grid.Row="3" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObject.CoordinateBX}" />
+                <ComboBox Grid.Row="3" Grid.Column="2"
+                          SelectedIndex="0"
+                          MaxDropDownHeight="500"
+                          HorizontalAlignment="Stretch" 
+                          Margin="5 10 30 5"
+                          SelectedValue="{Binding SelectedAreaObject.CoordinateBXDirection}"
+                          ItemsSource="{Binding CoordinateXDirection}" />
+                
+                <TextBox IsReadOnly="True" Grid.Row="3" Grid.Column="3" Watermark="Y" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObject.CoordinateBY}" />
+                <ComboBox Grid.Row="3" Grid.Column="4"
+                          SelectedIndex="0"
+                          MaxDropDownHeight="500"
+                          HorizontalAlignment="Stretch" 
+                          Margin="5 10 5 5"
+                          SelectedValue="{Binding SelectedAreaObject.CoordinateBYDirection}"
+                          ItemsSource="{Binding CoordinateYDirection}" />
                 
                 <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">ID</Label>
-                <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Watermark="ID" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding SelectedAreaObjectForm.Id}" />
+                <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" Watermark="ID" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding SelectedAreaObject.Id}" />
                 
                 <Label Grid.Row="5" Grid.Column="0" Margin="0 12 0 0">Popis</Label>
-                <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Watermark="Popis" Margin="5 10 5 5" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding SelectedAreaObjectForm.Description}" />
+                <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="4" Watermark="Popis" Margin="5 10 5 5" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding SelectedAreaObject.Description}" />
                 
                 <TextBlock Grid.Row="6" Grid.Column="0" Margin="0 12 0 0" Text="{Binding TitleAssociatedObjects}" />
-                <DataGrid Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2"
+                <DataGrid Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="4"
                           Margin="5 10 5 5" ItemsSource="{Binding AssociatedObjects}"
                           SelectionMode="Single"
                           SelectionChanged="DataGrid_OnSelectionAssociatedObjectChanged"
@@ -150,15 +210,15 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Typ objektu" Width="Auto" Binding="{Binding DisplayType}" />
                         <DataGridTextColumn Header="ID" Width="Auto" Binding="{Binding Id}" />
-                        <DataGridTextColumn Header="Bod A" Width="Auto" Binding="{Binding CoordinateA}" />
-                        <DataGridTextColumn Header="Bod B" Width="Auto" Binding="{Binding CoordinateB}" />
+                        <DataGridTextColumn Header="Bod A" Width="Auto" Binding="{Binding DisplayCoordinateA}" />
+                        <DataGridTextColumn Header="Bod B" Width="Auto" Binding="{Binding DisplayCoordinateB}" />
                         <DataGridTextColumn Header="Popis" Width="*" Binding="{Binding Description}" />
                     </DataGrid.Columns>
                 </DataGrid>
                 
-                <StackPanel Grid.Row="7" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                <StackPanel Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button IsEnabled="False" Content="Odstrániť" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="DeleteAreaObjectButton_OnClick" />
-                    <Button Content="Uložiť" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="SaveAreaObjectButton_OnClick" />
+                    <Button IsEnabled="False" Content="Uložiť" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="SaveAreaObjectButton_OnClick" />
                 </StackPanel>
             </Grid>
             
