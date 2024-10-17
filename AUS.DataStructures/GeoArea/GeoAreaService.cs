@@ -245,19 +245,6 @@ public class GeoAreaService
     {
         // pozn.: nezabudnut odstranit inverzne referenciu z associovanych objektov
     }
-    
-    public void ExecuteInOrder(Action<List<AreaObjectDTO>> actionToExec)
-    {
-        _kdTreeRealEstates.ExecuteInOrder(areaObject =>
-        {
-            actionToExec(areaObject.Select(a => a.ToDTO()).ToList());
-        });
-        
-        _kdTreeParcels.ExecuteInOrder(areaObject =>
-        {
-            actionToExec(areaObject.Select(a => a.ToDTO()).ToList());
-        });
-    }
 
     public void GenerateOperations(int count, double probabilityOfOverlay, int minX, int maxX, int minY, int maxY, int numberOfDecimalPlaces, bool generateRandomDescription)
     {

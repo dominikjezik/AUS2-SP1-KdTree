@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace AUS.DataStructures.GeoArea;
+﻿namespace AUS.DataStructures.GeoArea;
 
 public class AreaObject
 {

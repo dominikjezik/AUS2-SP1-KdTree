@@ -23,10 +23,22 @@ var area2 = new AreaObject
     Type = AreaObjectType.RealEstate
 };
 
+/*
 kdtree.Insert(new(10, 10), area1);
 kdtree.Insert(new(40, 20), area1);
 kdtree.Insert(new(0, 0), area2);
 kdtree.Insert(new(40, 20), area2);
+*/
+
+kdtree.Insert(new(70, 50), area1);
+kdtree.Insert(new(-30, 10), area1);
+kdtree.Insert(new(80, -70), area1);
+kdtree.Insert(new(-100, -60), area1);
+kdtree.Insert(new(-40, -70), area1);
+kdtree.Insert(new(-10, 40), area1);
+kdtree.Insert(new(40, 70), area1);
+kdtree.Insert(new(50, 20), area1);
+
 
 var testValue = kdtree.FindByKey(new(40, 20));
 foreach (var value in testValue)

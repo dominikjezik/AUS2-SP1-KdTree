@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using AUS.DataStructures.GeoArea;
-using AUS.GUI.Models;
 
 namespace AUS.GUI.ViewModels;
 
@@ -29,27 +27,6 @@ public class MainWindowViewModel : ViewModelBase
             }
         }
     }
-
-    /*
-    public AreaObjectForm? SelectedAreaObjectForm
-    {
-        get => _selectedAreaObjectForm;
-        set {
-            _selectedAreaObjectForm = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(IsSelectedAreaObject));
-            OnPropertyChanged(nameof(Title));
-            OnPropertyChanged(nameof(TitleAssociatedObjects));
-
-            // TODO: Otazka na konzultaciu, bez Distinct() zobrazuje Duplicity (lebo 2 body) a blbne zobrazenie zoznamu
-            if (SelectedAreaObject != null)
-            {
-                // TODO
-                //AssociatedObjects = new ObservableCollection<AreaObjectDTO>(SelectedAreaObject.AssociatedObjects.Distinct());
-            }
-        }
-    }
-    */
     
     public bool IsSelectedAreaObject => SelectedAreaObject != null;
 
