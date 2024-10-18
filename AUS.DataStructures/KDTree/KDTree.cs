@@ -107,38 +107,246 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
         }
     }
 
-    public void Delete(TKey key)
+    public void Delete(TKey keyForDelete, TData dataForDelete)
     {
-        throw new NotImplementedException();
-    }
-
-    public void ExecuteInOrder(Action<TKey> actionToExec)
-    {
-        ExecuteInOrder(actionToExec, _root);
-    }
-
-    private void ExecuteInOrder(Action<TKey> actionToExec, KDTreeNode<TKey, TData>? node)
-    {
-        if (node != null)
+        if (_root == null)
         {
-            ExecuteInOrder(actionToExec, node.LeftNode);
-            actionToExec(node.Key);
-            ExecuteInOrder(actionToExec, node.RightNode);
+            throw new InvalidOperationException("Item with given key not found!");
         }
+
+        var isFound = TryFindNode(keyForDelete, out var foundNode, out var lastDimenstion);
+
+        if (!isFound)
+        {
+            throw new InvalidOperationException("Item with given key not found!");
+        }
+
+        // Trivialna situacia ked mam v node viac prvkov
+        if (foundNode.Data.Count > 1)
+        {
+            if (foundNode.Data.Contains(dataForDelete))
+            {
+                foundNode.Data.Remove(dataForDelete);
+            }
+            else
+            {
+                throw new InvalidOperationException("Item with given key and data not found!");
+            }
+            
+            return;
+        }
+        
+        // Trivialna situacia ked node je list
+        if (foundNode.LeftNode == null && foundNode.RightNode == null)
+        {
+            if (foundNode.ParentNode == null)
+            {
+                _root = null;
+                return;
+            }
+            
+            if (foundNode.ParentNode.LeftNode == foundNode)
+            {
+                foundNode.ParentNode.LeftNode = null;
+            }
+            else
+            {
+                foundNode.ParentNode.RightNode = null;
+            }
+            
+            return;
+        }
+        
+        // Vrchol nie je listom => nahrad ho najmensim/najvacsim v pravom/lavom podstrome podla poslednej dimenzie
+
+        // Proces bude bezat pokial najdeny nahradnik (min) nie je listom
+        while (true)
+        {
+            KDTreeNode<TKey, TData> replacementNode;
+            
+            if (foundNode.RightNode != null)
+            {
+                // Pravy podstrom je k dispozici => hladame v pravom podstrome minimum podla lastDimension
+                replacementNode = FindMinimumBy(lastDimenstion, foundNode.RightNode, out lastDimenstion);
+            }
+            else
+            {
+                // Pravy podstrom nie je => hladame v lavom podstrome maximum podla lastDimension
+                replacementNode = FindMaximumBy(lastDimenstion, foundNode.LeftNode, out lastDimenstion);
+            }
+            
+            // Premiestnenie najdeneho nahradnika na miesto vymazaneho uzla (v tomto momente mazaneho uzla)
+            foundNode.Key = replacementNode.Key;
+            foundNode.Data = replacementNode.Data;
+            
+            // Ak je nahradnik listom tak ho vymazeme (uplne)
+            if (replacementNode.LeftNode == null && replacementNode.RightNode == null)
+            {
+                if (replacementNode.ParentNode!.LeftNode == replacementNode)
+                {
+                    replacementNode.ParentNode.LeftNode = null;
+                }
+                else
+                {
+                    replacementNode.ParentNode.RightNode = null;
+                }
+                
+                replacementNode.ParentNode = null;
+                
+                // --- KONIEC DELETU ---
+                return;
+            }
+            
+            // Ak replacementNode nie je listom tak pokracujeme vymazavanim nodu kde bolo najdene minimum/maximum
+            foundNode = replacementNode;
+        }
+    }
+
+    // TODO: Samostatne pretestovat
+    private KDTreeNode<TKey, TData> FindMinimumBy(int targetDimension, KDTreeNode<TKey, TData>? actualNode, out int actualDimension)
+    {
+        var foundMinimalNode = actualNode;
+        actualDimension = (targetDimension + 1) % _numberOfDimension;
+        
+        var stack = new KDTreeDimensionalStack<TKey, TData>();
+        
+        while (stack.Any() || actualNode != null)
+        {
+            if (actualNode != null)
+            {
+                // Pozor prvy krat sa toto vykona vzdy (porovnava so samym sebou)
+                // Nove minimum?
+                if (actualNode.Key.CompareTo(foundMinimalNode!.Key, targetDimension) < 0)
+                {
+                    foundMinimalNode = actualNode;
+                }
+                
+                stack.Push(actualNode, actualDimension);
+                actualNode = actualNode.LeftNode;
+                actualDimension = ++actualDimension % _numberOfDimension;
+            }
+            else
+            {
+                (actualNode, actualDimension) = stack.Pop();
+                
+                // Ak sa nachadzam na leveli targetDimension tak koncim => do prava ISTO nemusim ist
+                if (actualDimension == targetDimension)
+                {
+                    actualNode = null;
+                }
+                else
+                {
+                    if (actualNode.RightNode == null)
+                    {
+                        actualNode = null;
+                    }
+                    else
+                    {
+                        actualNode = actualNode.RightNode;
+                        actualDimension = ++actualDimension % _numberOfDimension;
+                    }
+                }
+            }
+        }
+        
+        return foundMinimalNode!;
+    }
+    
+    // TODO: Urcite pretestovat - nemal som cas teraz testovat
+    private KDTreeNode<TKey, TData> FindMaximumBy(int targetDimension, KDTreeNode<TKey, TData>? actualNode, out int actualDimension)
+    {
+        var foundMaximalNode = actualNode;
+        actualDimension = (targetDimension + 1) % _numberOfDimension;
+        
+        var stack = new KDTreeDimensionalStack<TKey, TData>();
+        
+        while (stack.Any() || actualNode != null)
+        {
+            if (actualNode != null)
+            {
+                // Pozor prvy krat sa toto vykona vzdy (porovnava so samym sebou)
+                // Nove maximum?
+                if (actualNode.Key.CompareTo(foundMaximalNode!.Key, targetDimension) > 0)
+                {
+                    foundMaximalNode = actualNode;
+                }
+                
+                stack.Push(actualNode, actualDimension);
+                actualNode = actualNode.RightNode;
+                actualDimension = ++actualDimension % _numberOfDimension;
+            }
+            else
+            {
+                (actualNode, actualDimension) = stack.Pop();
+                
+                // Ak sa nachadzam na leveli targetDimension tak koncim => do lava ISTO nemusim ist
+                if (actualDimension == targetDimension)
+                {
+                    actualNode = null;
+                }
+                else
+                {
+                    if (actualNode.LeftNode == null)
+                    {
+                        actualNode = null;
+                    }
+                    else
+                    {
+                        actualNode = actualNode.LeftNode;
+                        actualDimension = ++actualDimension % _numberOfDimension;
+                    }
+                }
+            }
+        }
+        
+        return foundMaximalNode!;
     }
     
     public void ExecuteInOrder(Action<List<TData>> actionToExec)
     {
-        ExecuteInOrder(actionToExec, _root);
+        ExecuteInOrder(node =>
+        {
+            actionToExec(node.Data);
+        });
     }
     
-    private void ExecuteInOrder(Action<List<TData>> actionToExec, KDTreeNode<TKey, TData>? node)
+    public void ExecuteInOrder(Action<TKey> actionToExec)
     {
-        if (node != null)
+        ExecuteInOrder(node =>
         {
-            ExecuteInOrder(actionToExec, node.LeftNode);
-            actionToExec(node.Data);
-            ExecuteInOrder(actionToExec, node.RightNode);
+            actionToExec(node.Key);
+        });
+    }
+
+    private void ExecuteInOrder(Action<KDTreeNode<TKey, TData>> actionToExec)
+    {
+        if (_root == null)
+        {
+            return;
         }
+
+        var stack = new List<KDTreeNode<TKey, TData>>();
+
+        var currentNode = _root;
+        
+        
+        while (stack.Any() || currentNode != null)
+        {
+            if (currentNode != null)
+            {
+                stack.Add(currentNode);
+                currentNode = currentNode.LeftNode;
+            }
+            else
+            {
+                currentNode = stack[stack.Count - 1];
+                stack.RemoveAt(stack.Count - 1);
+
+                actionToExec(currentNode);
+
+                currentNode = currentNode.RightNode;
+            }
+        }
+        
     }
 }

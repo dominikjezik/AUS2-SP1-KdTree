@@ -2,9 +2,9 @@
 
 public class KDTreeNode<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
 {
-    public TKey Key { get; }
+    public TKey Key { get; set; }
 
-    public List<TData> Data { get; } = new();
+    public List<TData> Data { get; set; } = new();
 
     public KDTreeNode<TKey, TData>? ParentNode { get; set; }
 
