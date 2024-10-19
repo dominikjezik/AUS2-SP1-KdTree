@@ -24,6 +24,7 @@ var area2 = new AreaObject
 };
 
 
+// Vlastny strom
 /*
 kdtree.Insert(new(70, 50), area1);
 kdtree.Insert(new(-30, 10), area1);
@@ -36,6 +37,8 @@ kdtree.Insert(new(50, 20), area1);
 */
 
 
+// Z prednasky (1 priklad)
+/*
 kdtree.Insert(new(23, 35), area1);
 kdtree.Insert(new(20, 33), area1);
 kdtree.Insert(new(25, 36), area1);
@@ -50,14 +53,31 @@ kdtree.Insert(new(26, 35), area1);
 kdtree.Insert(new(30, 33), area1);
 kdtree.Insert(new(29, 46), area1);
 kdtree.Insert(new(27, 43), area1);
+*/
 
 //kdtree.Insert(new(18,40), area1);
 
-kdtree.Insert(new(13, 42), area1);
+//kdtree.Insert(new(13, 42), area1);
 //kdtree.Insert(new(13.5, 43), area1);
 
 //kdtree.Insert(new(18,43), area1);
 //kdtree.Insert(new(19,44), area1);
+
+
+// Z prednasky (2 priklad)
+kdtree.Insert(new(23, 35), area1);
+kdtree.Insert(new(22, 39), area1);
+kdtree.Insert(new(24, 36), area1);
+kdtree.Insert(new(22, 31), area1);
+kdtree.Insert(new(22, 42), area1);
+kdtree.Insert(new(24, 34), area1);
+kdtree.Insert(new(24, 40), area1);
+kdtree.Insert(new(22, 32), area1);
+kdtree.Insert(new(12, 41), area1);
+kdtree.Insert(new(24, 35), area1);
+kdtree.Insert(new(30, 33), area1);
+kdtree.Insert(new(29, 46), area1);
+kdtree.Insert(new(27, 43), area1);
 
 /*
 var testValue = kdtree.FindByKey(new(40, 20));
@@ -72,6 +92,6 @@ kdtree.ExecuteInOrder((GPSCoordinate key) =>
 });
 */
 
-kdtree.Delete(new(20, 33), area1);
+kdtree.Delete(new(23, 35), area1);
 
 

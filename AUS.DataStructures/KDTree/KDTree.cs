@@ -164,6 +164,7 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
         {
             KDTreeNode<TKey, TData> replacementNode;
             
+            /*
             if (foundNode.RightNode != null)
             {
                 // Pravy podstrom je k dispozici => hladame v pravom podstrome minimum podla lastDimension
@@ -173,6 +174,18 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
             {
                 // Pravy podstrom nie je => hladame v lavom podstrome maximum podla lastDimension
                 replacementNode = FindMaximumBy(lastDimenstion, foundNode.LeftNode, out lastDimenstion);
+            }
+            */
+            
+            if (foundNode.LeftNode != null)
+            {
+                // Lavny podstrom je k dispozici => hladame v lavom podstrome maximum podla lastDimension
+                replacementNode = FindMaximumBy(lastDimenstion, foundNode.LeftNode, out lastDimenstion);
+            }
+            else
+            {
+                // Lavny podstrom nie je => hladame v pravom podstrome minimum podla lastDimension
+                replacementNode = FindMinimumBy(lastDimenstion, foundNode.RightNode, out lastDimenstion);
             }
             
             // Premiestnenie najdeneho nahradnika na miesto vymazaneho uzla (v tomto momente mazaneho uzla)
@@ -207,6 +220,7 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
     {
         var foundMinimalNode = actualNode;
         actualDimension = (targetDimension + 1) % _numberOfDimension;
+        var foundMinimalNodeDimension = actualDimension;
         
         var stack = new KDTreeDimensionalStack<TKey, TData>();
         
@@ -219,6 +233,7 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
                 if (actualNode.Key.CompareTo(foundMinimalNode!.Key, targetDimension) < 0)
                 {
                     foundMinimalNode = actualNode;
+                    foundMinimalNodeDimension = actualDimension;
                 }
                 
                 stack.Push(actualNode, actualDimension);
@@ -249,6 +264,7 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
             }
         }
         
+        actualDimension = foundMinimalNodeDimension;
         return foundMinimalNode!;
     }
     
@@ -257,6 +273,7 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
     {
         var foundMaximalNode = actualNode;
         actualDimension = (targetDimension + 1) % _numberOfDimension;
+        var foundMaximalNodeDimension = actualDimension;
         
         var stack = new KDTreeDimensionalStack<TKey, TData>();
         
@@ -269,6 +286,7 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
                 if (actualNode.Key.CompareTo(foundMaximalNode!.Key, targetDimension) > 0)
                 {
                     foundMaximalNode = actualNode;
+                    foundMaximalNodeDimension = actualDimension;
                 }
                 
                 stack.Push(actualNode, actualDimension);
@@ -299,6 +317,7 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
             }
         }
         
+        actualDimension = foundMaximalNodeDimension;
         return foundMaximalNode!;
     }
     
