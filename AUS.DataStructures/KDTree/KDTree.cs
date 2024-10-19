@@ -164,7 +164,6 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
         {
             KDTreeNode<TKey, TData> replacementNode;
             
-            /*
             if (foundNode.RightNode != null)
             {
                 // Pravy podstrom je k dispozici => hladame v pravom podstrome minimum podla lastDimension
@@ -174,18 +173,6 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
             {
                 // Pravy podstrom nie je => hladame v lavom podstrome maximum podla lastDimension
                 replacementNode = FindMaximumBy(lastDimenstion, foundNode.LeftNode, out lastDimenstion);
-            }
-            */
-            
-            if (foundNode.LeftNode != null)
-            {
-                // Lavny podstrom je k dispozici => hladame v lavom podstrome maximum podla lastDimension
-                replacementNode = FindMaximumBy(lastDimenstion, foundNode.LeftNode, out lastDimenstion);
-            }
-            else
-            {
-                // Lavny podstrom nie je => hladame v pravom podstrome minimum podla lastDimension
-                replacementNode = FindMinimumBy(lastDimenstion, foundNode.RightNode, out lastDimenstion);
             }
             
             // Premiestnenie najdeneho nahradnika na miesto vymazaneho uzla (v tomto momente mazaneho uzla)
@@ -214,8 +201,7 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
             foundNode = replacementNode;
         }
     }
-
-    // TODO: Samostatne pretestovat
+    
     private KDTreeNode<TKey, TData> FindMinimumBy(int targetDimension, KDTreeNode<TKey, TData>? actualNode, out int actualDimension)
     {
         var foundMinimalNode = actualNode;
@@ -268,7 +254,6 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
         return foundMinimalNode!;
     }
     
-    // TODO: Urcite pretestovat - nemal som cas teraz testovat
     private KDTreeNode<TKey, TData> FindMaximumBy(int targetDimension, KDTreeNode<TKey, TData>? actualNode, out int actualDimension)
     {
         var foundMaximalNode = actualNode;
