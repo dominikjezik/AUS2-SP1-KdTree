@@ -148,7 +148,7 @@
                           Margin="5 10 5 5" />
                 
                 <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Bod 1</Label>
-                <TextBox IsReadOnly="True" Grid.Row="2" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObject.CoordinateAX}" />
+                <TextBox Grid.Row="2" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObject.CoordinateAX}" />
                 <ComboBox Grid.Row="2" Grid.Column="2"
                           SelectedIndex="0"
                           MaxDropDownHeight="500"
@@ -176,7 +176,7 @@
                           SelectedValue="{Binding SelectedAreaObject.CoordinateBXDirection}"
                           ItemsSource="{Binding CoordinateXDirection}" />
                 
-                <TextBox IsReadOnly="True" Grid.Row="3" Grid.Column="3" Watermark="Y" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObject.CoordinateBY}" />
+                <TextBox Grid.Row="3" Grid.Column="3" Watermark="Y" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObject.CoordinateBY}" />
                 <ComboBox Grid.Row="3" Grid.Column="4"
                           SelectedIndex="0"
                           MaxDropDownHeight="500"
@@ -217,8 +217,8 @@
                 </DataGrid>
                 
                 <StackPanel Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button IsEnabled="False" Content="Odstrániť" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="DeleteAreaObjectButton_OnClick" />
-                    <Button IsEnabled="False" Content="Uložiť" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="SaveAreaObjectButton_OnClick" />
+                    <Button Content="Odstrániť" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="DeleteAreaObjectButton_OnClick" />
+                    <Button Content="Uložiť" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="SaveAreaObjectButton_OnClick" />
                 </StackPanel>
             </Grid>
             

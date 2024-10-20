@@ -2,7 +2,6 @@
 
 public class AreaObjectDTO
 {
-    // TODO: Mozem pouzit referenciu na AreaObject (je private)
     private AreaObject? _originalAreaObject;
     
     public AreaObjectDTO(AreaObject areaObject)
@@ -13,6 +12,8 @@ public class AreaObjectDTO
     public AreaObjectDTO()
     {
     }
+    
+    #region Form Properties
     
     public AreaObjectType Type { get; set; }
     
@@ -35,6 +36,8 @@ public class AreaObjectDTO
     public string CoordinateBY { get; set; } = string.Empty;
     public char CoordinateBYDirection { get; set; } = 'N';
     
+    #endregion
+    
     public List<AreaObjectDTO> AssociatedObjects = new();
     
     public string DisplayType => Type == AreaObjectType.RealEstate ? "Nehnuteľnosť" : "Parcela";
@@ -43,10 +46,67 @@ public class AreaObjectDTO
     
     public string DisplayCoordinateB => $"{CoordinateBX}{CoordinateBXDirection} {CoordinateBY}{CoordinateBYDirection}";
     
-    // TODO: Mozme pouzit pri delete
     public bool IsEqualTo(AreaObject areaObject)
     {
         return _originalAreaObject != null && _originalAreaObject.Equals(areaObject);
+    }
+
+    public GPSCoordinate OriginalCoordinateA => new(
+        _originalAreaObject?.CoordinateA.X ?? 0,
+        _originalAreaObject?.CoordinateA.Y ?? 0
+    );
+    
+    public GPSCoordinate OriginalCoordinateB => new(
+        _originalAreaObject?.CoordinateB.X ?? 0,
+        _originalAreaObject?.CoordinateB.Y ?? 0
+    );
+    
+    public bool AreCoordinatesChanged()
+    {
+        if (!double.TryParse(CoordinateAX, out double coordinateAX))
+        {
+            coordinateAX = 0;
+        }
+        
+        if (!double.TryParse(CoordinateAY, out double coordinateAY))
+        {
+            coordinateAY = 0;
+        }
+        
+        if (!double.TryParse(CoordinateBX, out double coordinateBX))
+        {
+            coordinateBX = 0;
+        }
+        
+        if (!double.TryParse(CoordinateBY, out double coordinateBY))
+        {
+            coordinateBY = 0;
+        }
+        
+        var coordinateA = new GPSCoordinate(
+            CoordinateAXDirection == 'W' ? -coordinateAX : coordinateAX,
+            CoordinateAYDirection == 'S' ? -coordinateAY : coordinateAY
+        );
+        
+        var coordinateB = new GPSCoordinate(
+            CoordinateBXDirection == 'W' ? -coordinateBX : coordinateBX,
+            CoordinateBYDirection == 'S' ? -coordinateBY : coordinateBY
+        );
+        
+        return _originalAreaObject?.CoordinateA != coordinateA || _originalAreaObject?.CoordinateB != coordinateB;
+    }
+
+    public void UpdateDetailsOriginalAreaObject()
+    {
+        if (_originalAreaObject == null)
+        {
+            return;
+        }
+
+        int.TryParse(Id, out var newId);
+
+        _originalAreaObject.Id = newId;
+        _originalAreaObject.Description = Description;
     }
 
     public void LoadAssociatedObjects()

@@ -72,7 +72,6 @@ public partial class MainWindow : Window
         {
             selected.LoadAssociatedObjects();
             viewModel.SelectedAreaObject = selected;
-            
         }
     }
 
@@ -91,11 +90,24 @@ public partial class MainWindow : Window
         var viewModel = (MainWindowViewModel)DataContext!;
         var areaObject = viewModel.SelectedAreaObject!;
         
-        _geoAreaService.Update(areaObject);
+        var updatedAreaObject = _geoAreaService.Update(areaObject);
+        
+        var indexOfModifiedAreaObject = viewModel.AreaObjects.IndexOf(areaObject);
+        
+        // "refresh"
+        viewModel.AreaObjects[indexOfModifiedAreaObject] = new AreaObjectDTO();
+        viewModel.AreaObjects[indexOfModifiedAreaObject] = updatedAreaObject;
+        
+        viewModel.SelectedAreaObject = updatedAreaObject;
     }
 
     private void DeleteAreaObjectButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+        var viewModel = (MainWindowViewModel)DataContext!;
+        var areaObject = viewModel.SelectedAreaObject!;
+        
+        _geoAreaService.Delete(areaObject);
+        viewModel.SelectedAreaObject = null;
+        viewModel.AreaObjects.Remove(areaObject);
     }
 }

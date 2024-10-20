@@ -81,7 +81,6 @@ public class GeoAreaService
             _kdTreeParcels.ExecuteInOrder(result.AddRange);
         }
 
-        // TODO: Otazka na konzultaciu, bez Distinct() zobrazuje Duplicity (lebo 2 body) a blbne zobrazenie zoznamu
         return result.Distinct().Select(a => a.ToDTO()).ToList();
     }
 
@@ -89,8 +88,6 @@ public class GeoAreaService
     {
         switch (areaObjectType)
         {
-            // TODO: Otazka na konzultaciu, bez Distinct() zobrazuje Duplicity (lebo 2 body) a blbne zobrazenie zoznamu
-            
             case AreaObjectType.RealEstate:
                 return FindRealEstates(coordinate).ToList();
             case AreaObjectType.Parcel:
@@ -104,8 +101,6 @@ public class GeoAreaService
     {
         switch (areaObjectType)
         {
-            // TODO: Otazka na konzultaciu, bez Distinct() zobrazuje Duplicity (lebo 2 body) a blbne zobrazenie zoznamu
-            
             case AreaObjectType.RealEstate:
                 return FindRealEstates(coordinateA, coordinateB).Distinct().ToList();
             case AreaObjectType.Parcel:
@@ -202,48 +197,52 @@ public class GeoAreaService
         return areaObjectToInsert.ToDTO();
     }
     
-    public AreaObjectDTO Update(AreaObjectDTO areaObject)
+    public void Delete(AreaObjectDTO areaObject)
     {
-        throw new NotImplementedException();
+        List<AreaObject> associatedObjects = new();
         
-        // TODO: Edit (v pripade editu suradnic pravdepodobne odobrat a na novo pridat)
-        
-        /*
-        bool correctCoordinateAX = double.TryParse(form.CoordinateAX, out var coordinateAX); 
-        bool correctCoordinateAY = double.TryParse(form.CoordinateAY, out var coordinateAY);
+        var coordinateA = areaObject.OriginalCoordinateA;
+        var coordinateB = areaObject.OriginalCoordinateB;
 
-        bool correctCoordinateBX = double.TryParse(form.CoordinateBX, out var coordinateBX);
-        bool correctCoordinateBY = double.TryParse(form.CoordinateBY, out var coordinateBY);
-        
-        bool correctId = int.TryParse(form.Id, out var id);
-        
-        if (!correctCoordinateAX || !correctCoordinateAY || !correctCoordinateBX || !correctCoordinateBY)
+        if (areaObject.Type == AreaObjectType.Parcel)
         {
-            return;
-        }
-        
-        // Kontrola ci sa nezmenili suradnice
-        // TODO: presunutie do Service
-        if (originalAreaObject.CoordinateA == new GPSCoordinate(coordinateAX, coordinateAY) && 
-            originalAreaObject.CoordinateB == new GPSCoordinate(coordinateBX, coordinateBY))
-        {
-            originalAreaObject.Id = id;
-            originalAreaObject.Description = form.Description;
-            viewModel.RefreshAreaObjects();
+            var deletedAreaObject = _kdTreeParcels.Delete(coordinateA, areaObject.IsEqualTo);
+            _kdTreeParcels.Delete(coordinateB, areaObject.IsEqualTo);
+
+            associatedObjects = deletedAreaObject.AssociatedObjects;
         }
         else
         {
-            // TODO: Zmenili sa aj suradnice, treba (obe?) suradnice odstranit a na novo pridat
-            throw new NotImplementedException();
+            var deletedAreaObject = _kdTreeRealEstates.Delete(coordinateA, areaObject.IsEqualTo);
+            _kdTreeRealEstates.Delete(coordinateB, areaObject.IsEqualTo);
+
+            associatedObjects = deletedAreaObject.AssociatedObjects;
         }
-         */
 
-        return areaObject;
+        // Mazanie inverznych referencii
+        foreach (var associatedObject in associatedObjects)
+        {
+            var associatedObjectOfAnother = associatedObject.AssociatedObjects;
+
+            var associatedObjectToDelete = associatedObjectOfAnother.Find(areaObject.IsEqualTo);
+            
+            if (associatedObjectToDelete != null)
+            {
+                associatedObjectOfAnother.Remove(associatedObjectToDelete);
+            }
+        }
     }
-
-    public void Delete(AreaObjectDTO areaObject)
+    
+    public AreaObjectDTO Update(AreaObjectDTO areaObject)
     {
-        // pozn.: nezabudnut odstranit inverzne referenciu z associovanych objektov
+        if (!areaObject.AreCoordinatesChanged())
+        {
+            areaObject.UpdateDetailsOriginalAreaObject();
+            return areaObject;
+        }
+        
+        Delete(areaObject);
+        return Insert(areaObject);
     }
 
     public void GenerateOperations(int count, double probabilityOfOverlay, int minX, int maxX, int minY, int maxY, int numberOfDecimalPlaces, bool generateRandomDescription)

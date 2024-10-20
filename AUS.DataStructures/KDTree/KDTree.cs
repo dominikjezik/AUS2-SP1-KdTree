@@ -140,6 +140,45 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
         }
     }
 
+    public TData Delete(TKey keyForDelete, Predicate<TData> predicate)
+    {
+        if (_root == null)
+        {
+            throw new InvalidOperationException("Item with given key not found!");
+        }
+
+        var isFound = TryFindNode(keyForDelete, out var foundNode, out var lastDimenstion);
+
+        if (!isFound)
+        {
+            throw new InvalidOperationException("Item with given key not found!");
+        }
+        
+        // Trivialna situacia ked mam v node viac prvkov
+        if (foundNode.Data.Count > 1)
+        {
+            var dataForDelete = foundNode.Data.Find(predicate);
+            
+            if (dataForDelete != null)
+            {
+                foundNode.Data.Remove(dataForDelete);
+            }
+            else
+            {
+                throw new InvalidOperationException("Item with given key and data not found!");
+            }
+
+            return dataForDelete;
+        }
+
+        var dataThatWillBeDeleted = foundNode.Data[0];
+        
+        // Node obsahuje iba jeden prvok cize ideme mazat cely node
+        Delete(foundNode, lastDimenstion);
+
+        return dataThatWillBeDeleted;
+    }
+    
     public void Delete(TKey keyForDelete, TData dataForDelete)
     {
         if (_root == null)
@@ -169,9 +208,12 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
             return;
         }
         
-        
-        // Vrchol nie je listom => nahrad ho najmensim/najvacsim v pravom/lavom podstrome podla poslednej dimenzie
-        
+        // Node obsahuje iba jeden prvok cize ideme mazat cely node
+        Delete(foundNode, lastDimenstion);
+    }
+
+    private void Delete(KDTreeNode<TKey, TData> foundNode, int lastDimenstion)
+    {
         // 1. FAZA - Odstranenie najdeneho uzla a rekurzivne hladanie nahradnika (min/max) az po odstranenie listu
         
         // Zoznam nodov, ktore musime tiez zmazat a opatovne pridat (LEBO DUPLICITY)
@@ -179,7 +221,6 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
         
         // Zoznam nodov, ktore musime nasledne opatovne pridat nanovo
         var nodesToAdd = new List<(TKey, List<TData>)>();
-        
 
         // Proces bude bezat pokial najdeny nahradnik (min) nie je listom
         while (foundNode != null || nodesToDelete.Any())
