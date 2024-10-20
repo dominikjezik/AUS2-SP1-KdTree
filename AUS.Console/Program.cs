@@ -65,6 +65,7 @@ kdtree.Insert(new(27, 43), area1);
 
 
 // Z prednasky (2 priklad)
+/*
 kdtree.Insert(new(23, 35), area1);
 kdtree.Insert(new(22, 39), area1);
 kdtree.Insert(new(24, 36), area1);
@@ -78,6 +79,7 @@ kdtree.Insert(new(24, 35), area1);
 kdtree.Insert(new(30, 33), area1);
 kdtree.Insert(new(29, 46), area1);
 kdtree.Insert(new(27, 43), area1);
+*/
 
 /*
 var testValue = kdtree.FindByKey(new(40, 20));
@@ -92,6 +94,29 @@ kdtree.ExecuteInOrder((GPSCoordinate key) =>
 });
 */
 
-kdtree.Delete(new(23, 35), area1);
+//kdtree.Delete(new(23, 35), area1);
 
 
+var a1 = new AreaObject();
+var a2 = new AreaObject();
+var a3 = new AreaObject();
+var a4 = new AreaObject();
+var a5 = new AreaObject();
+
+kdtree.Insert(new(9, 43), a1);
+kdtree.Insert(new(32, 21), a2);
+
+kdtree.Delete(new(32, 21), a2);
+
+kdtree.Insert(new(64, 38), a3);
+
+kdtree.Delete(new(9, 43), a1);
+
+kdtree.Insert(new(17, 85), a4);
+kdtree.Insert(new(17, 37), a5);
+
+kdtree.Delete(new(64, 38), a3);
+
+var testValue = kdtree.FindByKey(new(17, 85));
+
+var t1 = 0;

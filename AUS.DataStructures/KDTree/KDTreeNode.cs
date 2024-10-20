@@ -17,4 +17,10 @@ public class KDTreeNode<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
         Key = key;
         Data.Add(data);
     }
+    
+    public KDTreeNode(TKey key, List<TData> data)
+    {
+        Key = key;
+        Data = data;
+    }
 }
