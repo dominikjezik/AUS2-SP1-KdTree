@@ -23,4 +23,9 @@ public class KDTreeNode<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
         Key = key;
         Data = data;
     }
+    
+    public KDTreeNode(TKey key)
+    {
+        Key = key;
+    }
 }

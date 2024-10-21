@@ -44,6 +44,15 @@ public class AreaObject
             AssociatedObjects = associatedObjects
         };
     }
+    
+    public string ToReducedCSV()
+    {
+        // TODO: Otestovat
+        
+        // Escapeovaci mechanizmus na nahradenie pripadnych ; a \ v popise objektu
+        var escapedDescription = Description.Replace(@"\", @"\\").Replace(";", @"\;");
+        return $"{CoordinateB.X};{CoordinateB.Y};{Id};{escapedDescription}";
+    }
 }
 
 public static class AreaObjectExtensions

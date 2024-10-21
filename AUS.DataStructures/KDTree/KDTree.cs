@@ -11,6 +11,11 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
         _numberOfDimension = numberOfDimension;
     }
 
+    public void Clear()
+    {
+        _root = null;
+    }
+
     private bool TryFindNode(TKey keysForSearch, out KDTreeNode<TKey, TData>? currentNode, out int actualDimension)
     {
         actualDimension = -1;
@@ -140,7 +145,39 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
         }
     }
 
-    public TData Delete(TKey keyForDelete, Predicate<TData> predicate)
+    public void Insert(TKey keyForInsert)
+    {
+        if (_root == null)
+        {
+            _root = new KDTreeNode<TKey, TData>(keyForInsert);
+            return;
+        }
+
+        var isFound = TryFindNode(keyForInsert, out var foundNode, out var lastDimenstion);
+
+        if (isFound)
+        {
+            return;
+        }
+
+        // Nenasiel sa cize vo foundNode je posledny uzol, kde skoncilo hladanie
+        if (keyForInsert.CompareTo(foundNode!.Key, lastDimenstion) <= 0)
+        {
+            // Vlozenie do lava
+            var newNode = new KDTreeNode<TKey, TData>(keyForInsert);
+            foundNode.LeftNode = newNode;
+            newNode.ParentNode = foundNode;
+        }
+        else
+        {
+            // Vlozenie do prava
+            var newNode = new KDTreeNode<TKey, TData>(keyForInsert);
+            foundNode.RightNode = newNode;
+            newNode.ParentNode = foundNode;
+        }
+    }
+
+    public TData? Delete(TKey keyForDelete, Predicate<TData> predicate)
     {
         if (_root == null)
         {
@@ -171,7 +208,7 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
             return dataForDelete;
         }
 
-        var dataThatWillBeDeleted = foundNode.Data[0];
+        var dataThatWillBeDeleted = foundNode.Data.FirstOrDefault();
         
         // Node obsahuje iba jeden prvok cize ideme mazat cely node
         Delete(foundNode, lastDimenstion);
@@ -526,5 +563,36 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
             }
         }
         
+    }
+    
+    public void ExecuteLevelOrder(Action<TKey, List<TData>> actionToExec)
+    {
+        if (_root == null)
+        {
+            return;
+        }
+        
+        var queue = new LinkedList<KDTreeNode<TKey, TData>>();
+        
+        queue.AddLast(_root);
+
+        while (queue.Any())
+        {
+            var currentNode = queue.First!.Value;
+            queue.RemoveFirst();
+            
+            // TODO: Kopia kluca kvoli bezpecnosti?
+            actionToExec(currentNode.Key, currentNode.Data);
+            
+            if (currentNode.LeftNode != null)
+            {
+                queue.AddLast(currentNode.LeftNode);
+            }
+            
+            if (currentNode.RightNode != null)
+            {
+                queue.AddLast(currentNode.RightNode);
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using AUS.DataStructures.GeoArea;
 using AUS.GUI.Models;
 using AUS.GUI.ViewModels;
@@ -77,12 +78,46 @@ public partial class MainWindow : Window
 
     private void SaveToFileButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+        var folderDialog = StorageProvider.OpenFolderPickerAsync(new()
+        {
+            Title = "Vyberte priečinok pre uloženie súborov",
+            AllowMultiple = false
+        });
+        
+        folderDialog.Wait();
+        
+        var result = folderDialog.Result;
+        
+        if (result.Count == 0)
+        {
+            return;
+        }
+
+        var folder = result[0].Path;
+        
+        _geoAreaService.SaveToFolder(folder);
     }
 
     private void LoadFromFileButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+        var folderDialog = StorageProvider.OpenFolderPickerAsync(new()
+        {
+            Title = "Vyberte priečinok pre načítanie súborov",
+            AllowMultiple = false
+        });
+        
+        folderDialog.Wait();
+        
+        var result = folderDialog.Result;
+        
+        if (result.Count == 0)
+        {
+            return;
+        }
+
+        var folder = result[0].Path;
+        
+        _geoAreaService.LoadFromFolder(folder);
     }
 
     private void SaveAreaObjectButton_OnClick(object? sender, RoutedEventArgs e)
