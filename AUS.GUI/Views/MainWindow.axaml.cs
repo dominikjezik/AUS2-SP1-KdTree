@@ -76,46 +76,42 @@ public partial class MainWindow : Window
         }
     }
 
-    private void SaveToFileButton_OnClick(object? sender, RoutedEventArgs e)
+    private void SaveToFileButton_OnClick(object? sender, RoutedEventArgs e) => ShowSaveToFileDialog();
+    
+    public async Task ShowSaveToFileDialog()
     {
-        var folderDialog = StorageProvider.OpenFolderPickerAsync(new()
+        var folderDialogResult = await StorageProvider.OpenFolderPickerAsync(new()
         {
             Title = "Vyberte priečinok pre uloženie súborov",
             AllowMultiple = false
         });
         
-        folderDialog.Wait();
-        
-        var result = folderDialog.Result;
-        
-        if (result.Count == 0)
+        if (folderDialogResult.Count == 0)
         {
             return;
         }
 
-        var folder = result[0].Path;
+        var folder = folderDialogResult[0].Path;
         
         _geoAreaService.SaveToFolder(folder);
     }
 
-    private void LoadFromFileButton_OnClick(object? sender, RoutedEventArgs e)
+    private void LoadFromFileButton_OnClick(object? sender, RoutedEventArgs e) => ShowLoadFromFileDialog();
+
+    private async Task ShowLoadFromFileDialog()
     {
-        var folderDialog = StorageProvider.OpenFolderPickerAsync(new()
+        var folderDialogResult = await StorageProvider.OpenFolderPickerAsync(new()
         {
             Title = "Vyberte priečinok pre načítanie súborov",
             AllowMultiple = false
         });
         
-        folderDialog.Wait();
-        
-        var result = folderDialog.Result;
-        
-        if (result.Count == 0)
+        if (folderDialogResult.Count == 0)
         {
             return;
         }
 
-        var folder = result[0].Path;
+        var folder = folderDialogResult[0].Path;
         
         _geoAreaService.LoadFromFolder(folder);
     }
