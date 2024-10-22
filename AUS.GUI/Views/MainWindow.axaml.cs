@@ -1,4 +1,3 @@
-using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using AUS.DataStructures.GeoArea;
@@ -31,7 +30,6 @@ public partial class MainWindow : Window
         
         var insertedAreaObject = _geoAreaService.Insert(areaObject);
         viewModel.AreaObjects.Add(insertedAreaObject);
-        viewModel.RefreshSelectedAreaObject();
     }
     
     private void GenerateButton_OnClick(object? sender, RoutedEventArgs e)
@@ -43,7 +41,7 @@ public partial class MainWindow : Window
     
     private void OnGenerateOperations(object? sender, GenerateOperationsModel generateOperationsModel)
     {
-        _geoAreaService.GenerateOperations(
+        _geoAreaService.GenerateAreaObjects(
             generateOperationsModel.CountOfOperations, 
             generateOperationsModel.ProbabilityOfOverlay, 
             generateOperationsModel.MinX, 
@@ -71,8 +69,9 @@ public partial class MainWindow : Window
 
         if (selected != null)
         {
-            selected.LoadAssociatedObjects();
-            viewModel.SelectedAreaObject = selected;
+            // Opatovne nacitanie (treba mat k dispozicii asociovane objekty)
+            var selectedAreaObject = _geoAreaService.Find(selected.Type, selected.CoordinateA, selected.InternalId!.Value);
+            viewModel.SelectedAreaObject = selectedAreaObject;
         }
     }
 
@@ -119,23 +118,31 @@ public partial class MainWindow : Window
     private void SaveAreaObjectButton_OnClick(object? sender, RoutedEventArgs e)
     {
         var viewModel = (MainWindowViewModel)DataContext!;
-        var areaObject = viewModel.SelectedAreaObject!;
         
-        var updatedAreaObject = _geoAreaService.Update(areaObject);
+        var originalAreaObject = viewModel.OriginalSelectedAreaObject!;
+        var modifiedAreaObject = viewModel.SelectedAreaObject!;
         
-        var indexOfModifiedAreaObject = viewModel.AreaObjects.IndexOf(areaObject);
+        var updatedAreaObject = _geoAreaService.Update(originalAreaObject, modifiedAreaObject);
         
-        // "refresh"
-        viewModel.AreaObjects[indexOfModifiedAreaObject] = new AreaObjectDTO();
-        viewModel.AreaObjects[indexOfModifiedAreaObject] = updatedAreaObject;
+        var indexOfOriginalAreaObject = viewModel.AreaObjects.IndexOf(originalAreaObject);
+
+        if (indexOfOriginalAreaObject == -1)
+        {
+            return;
+        }
         
         viewModel.SelectedAreaObject = updatedAreaObject;
+        viewModel.AreaObjects[indexOfOriginalAreaObject] = updatedAreaObject;
+        
+        // Z nejakeho dovodu sa nenastavi rovnaka referencia na original pri nastaveni
+        // selected vyssie, preto dodatocne nastavenie aby sedeli referencie
+        viewModel.OriginalSelectedAreaObject = updatedAreaObject;
     }
 
     private void DeleteAreaObjectButton_OnClick(object? sender, RoutedEventArgs e)
     {
         var viewModel = (MainWindowViewModel)DataContext!;
-        var areaObject = viewModel.SelectedAreaObject!;
+        var areaObject = viewModel.OriginalSelectedAreaObject!;
         
         _geoAreaService.Delete(areaObject);
         viewModel.SelectedAreaObject = null;

@@ -111,6 +111,19 @@ public class GeoAreaService
                 return FindAreaObjects(coordinateA, coordinateB).Distinct().ToList();
         }
     }
+
+    public AreaObjectDTO? Find(AreaObjectType areaObjectType, GPSCoordinate coordinate, Guid internalId)
+    {
+        switch (areaObjectType)
+        {
+            case AreaObjectType.RealEstate:
+                return FindRealEstates(coordinate).FirstOrDefault(a => a.InternalId == internalId);
+            case AreaObjectType.Parcel:
+                return FindParcels(coordinate).FirstOrDefault(a => a.InternalId == internalId);
+            default:
+                return FindAreaObjects(coordinate).FirstOrDefault(a => a.InternalId == internalId);
+        }
+    }
     
     public List<AreaObjectDTO> FindRealEstates(GPSCoordinate coordinate)
     {
@@ -205,22 +218,24 @@ public class GeoAreaService
     
     public void Delete(AreaObjectDTO areaObject)
     {
+        var areaObjectWithInternalId = new AreaObject(areaObject.InternalId);
+        
         List<AreaObject> associatedObjects = new();
         
-        var coordinateA = areaObject.OriginalCoordinateA;
-        var coordinateB = areaObject.OriginalCoordinateB;
+        var coordinateA = areaObject.CoordinateA;
+        var coordinateB = areaObject.CoordinateB;
 
         if (areaObject.Type == AreaObjectType.Parcel)
         {
-            var deletedAreaObject = _kdTreeParcels.Delete(coordinateA, areaObject.IsEqualTo);
-            _kdTreeParcels.Delete(coordinateB, areaObject.IsEqualTo);
+            var deletedAreaObject = _kdTreeParcels.Delete(coordinateA, areaObjectWithInternalId);
+            _kdTreeParcels.Delete(coordinateB, areaObjectWithInternalId);
 
             associatedObjects = deletedAreaObject.AssociatedObjects;
         }
         else
         {
-            var deletedAreaObject = _kdTreeRealEstates.Delete(coordinateA, areaObject.IsEqualTo);
-            _kdTreeRealEstates.Delete(coordinateB, areaObject.IsEqualTo);
+            var deletedAreaObject = _kdTreeRealEstates.Delete(coordinateA, areaObjectWithInternalId);
+            _kdTreeRealEstates.Delete(coordinateB, areaObjectWithInternalId);
 
             associatedObjects = deletedAreaObject.AssociatedObjects;
         }
@@ -230,7 +245,7 @@ public class GeoAreaService
         {
             var associatedObjectOfAnother = associatedObject.AssociatedObjects;
 
-            var associatedObjectToDelete = associatedObjectOfAnother.Find(areaObject.IsEqualTo);
+            var associatedObjectToDelete = associatedObjectOfAnother.Find(a => a.Equals(areaObjectWithInternalId));
             
             if (associatedObjectToDelete != null)
             {
@@ -239,23 +254,43 @@ public class GeoAreaService
         }
     }
     
-    public AreaObjectDTO Update(AreaObjectDTO areaObject)
+    public AreaObjectDTO Update(AreaObjectDTO originalAreaObject, AreaObjectDTO updatedAreaObject)
     {
-        if (!areaObject.AreCoordinatesChanged())
+        if (!updatedAreaObject.AreCoordinatesChanged(originalAreaObject))
         {
-            areaObject.UpdateDetailsOriginalAreaObject();
-            return areaObject;
+            AreaObject foundAreaObject;
+            
+            if (originalAreaObject.Type == AreaObjectType.RealEstate)
+            {
+                foundAreaObject = _kdTreeRealEstates
+                    .FindByKey(originalAreaObject.CoordinateA)
+                    .First(a => a.InternalId == originalAreaObject.InternalId);
+            }
+            else
+            {
+                foundAreaObject = _kdTreeParcels
+                    .FindByKey(originalAreaObject.CoordinateA)
+                    .First(a => a.InternalId == originalAreaObject.InternalId);
+            }
+            
+            
+            int.TryParse(updatedAreaObject.Id, out var newId);
+
+            foundAreaObject.Id = newId;
+            foundAreaObject.Description = updatedAreaObject.Description;
+
+            return foundAreaObject.ToDTO();
         }
         
-        Delete(areaObject);
-        return Insert(areaObject);
+        Delete(originalAreaObject);
+        return Insert(updatedAreaObject);
     }
     
     #endregion
 
     #region GenerateOperations
     
-    public void GenerateOperations(int count, double probabilityOfOverlay, int minX, int maxX, int minY, int maxY, int numberOfDecimalPlaces, bool generateRandomDescription)
+    public void GenerateAreaObjects(int count, double probabilityOfOverlay, int minX, int maxX, int minY, int maxY, int numberOfDecimalPlaces, bool generateRandomDescription)
     {
         List<AreaObjectDTO> realEstates = new();
         List<AreaObjectDTO> parcels = new();

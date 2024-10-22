@@ -2,6 +2,8 @@
 
 public class AreaObject
 {
+    public Guid InternalId { get; private set; }
+    
     public AreaObjectType Type { get; set; }
     
     public int Id { get; set; }
@@ -12,11 +14,27 @@ public class AreaObject
 
     public GPSCoordinate CoordinateB { get; set; } = new(0, 0);
 
-    public List<AreaObject> AssociatedObjects = new();
+    public List<AreaObject> AssociatedObjects { get; set; } = new();
+
+    public AreaObject(Guid? internalId = null)
+    {
+        InternalId = internalId ?? Guid.NewGuid();
+    }
     
     public override string ToString()
     {
         return $"Id: {Id}, Type: {Type}, Description: {Description}, CoordinateA: {CoordinateA}, CoordinateB: {CoordinateB}";
+    }
+    
+    public override bool Equals(object? obj)
+    {
+        if (obj == null || this.GetType() != obj.GetType())
+        {
+            return false;
+        }
+        
+        AreaObject areaObject = (AreaObject)obj;
+        return this.InternalId == areaObject.InternalId;
     }
     
     public AreaObjectDTO ToDTO(bool includeAssociatedObjects = true)
@@ -28,8 +46,9 @@ public class AreaObject
             associatedObjects = AssociatedObjects.Distinct().Select(areaObject => areaObject.ToDTO(false)).ToList();
         }
         
-        return new AreaObjectDTO(this)
+        return new AreaObjectDTO
         {
+            InternalId = InternalId,
             Type = Type,
             Id = Id.ToString(),
             Description = Description,
@@ -57,7 +76,7 @@ public class AreaObject
 
 public static class AreaObjectExtensions
 {
-    public static AreaObject ToAreaObject(this AreaObjectDTO areaObjectDTO, AreaObject? targetAreaObject = null)
+    public static AreaObject ToAreaObject(this AreaObjectDTO areaObjectDTO)
     {
         if (!int.TryParse(areaObjectDTO.Id, out var id))
         {
@@ -87,37 +106,19 @@ public static class AreaObjectExtensions
         // E (East) +, W (West) - => X
         // N (North) +, S (South) - => Y
         
-        if (areaObjectDTO.CoordinateAXDirection == 'W')
+        return new AreaObject
         {
-            coordinateAX *= -1;
-        }
-        
-        if (areaObjectDTO.CoordinateAYDirection == 'S')
-        {
-            coordinateAY *= -1;
-        }
-        
-        if (areaObjectDTO.CoordinateBXDirection == 'W')
-        {
-            coordinateBX *= -1;
-        }
-        
-        if (areaObjectDTO.CoordinateBYDirection == 'S')
-        {
-            coordinateBY *= -1;
-        }
-
-        if (targetAreaObject == null)
-        {
-            targetAreaObject = new AreaObject();
-        }
-        
-        targetAreaObject.Type = areaObjectDTO.Type;
-        targetAreaObject.Description = areaObjectDTO.Description;
-        targetAreaObject.Id = id;
-        targetAreaObject.CoordinateA = new GPSCoordinate(coordinateAX, coordinateAY);
-        targetAreaObject.CoordinateB = new GPSCoordinate(coordinateBX, coordinateBY);
-        
-        return targetAreaObject;
+            Type = areaObjectDTO.Type,
+            Description = areaObjectDTO.Description,
+            Id = id,
+            CoordinateA = new GPSCoordinate(
+                areaObjectDTO.CoordinateAXDirection == 'W' ? -coordinateAX : coordinateAX,
+                areaObjectDTO.CoordinateAYDirection == 'S' ? -coordinateAY : coordinateAY
+            ),
+            CoordinateB = new GPSCoordinate(
+                areaObjectDTO.CoordinateBXDirection == 'W' ? -coordinateBX : coordinateBX,
+                areaObjectDTO.CoordinateBYDirection == 'S' ? -coordinateBY : coordinateBY
+            )
+        };
     }
 }

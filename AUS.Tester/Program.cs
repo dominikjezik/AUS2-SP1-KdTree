@@ -3,8 +3,8 @@
 Console.WriteLine("--- TESTER ---");
 
 
-var tester = new KDTreeTester(2);
-tester.TestRandomDataSet(10000, 0.8);
+var tester = new KDTreeTester(45);
+tester.TestRandomDataSet(10000, 0.7);
 
 
 /*

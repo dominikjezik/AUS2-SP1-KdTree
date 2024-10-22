@@ -6,27 +6,35 @@ namespace AUS.GUI.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    private AreaObjectDTO? _selectedAreaObject;
+    private AreaObjectDTO? _selectedAreaObjectUpdated;
     private ObservableCollection<AreaObjectDTO> _areaObjects;
     private ObservableCollection<AreaObjectDTO> _associatedObjects;
     
     public AreaObjectDTO? SelectedAreaObject
     {
-        get => _selectedAreaObject;
+        get => _selectedAreaObjectUpdated;
         set
         {
-            _selectedAreaObject = value;
+            OriginalSelectedAreaObject = value;
+            
+            if (OriginalSelectedAreaObject != null)
+            {
+                _selectedAreaObjectUpdated = new AreaObjectDTO(OriginalSelectedAreaObject);
+                AssociatedObjects = new ObservableCollection<AreaObjectDTO>(OriginalSelectedAreaObject.AssociatedObjects);
+            }
+            else
+            {
+                _selectedAreaObjectUpdated = null;
+            }
+            
             OnPropertyChanged();
             OnPropertyChanged(nameof(IsSelectedAreaObject));
             OnPropertyChanged(nameof(Title));
             OnPropertyChanged(nameof(TitleAssociatedObjects));
-            
-            if (SelectedAreaObject != null)
-            {
-                AssociatedObjects = new ObservableCollection<AreaObjectDTO>(SelectedAreaObject.AssociatedObjects);
-            }
         }
     }
+    
+    public AreaObjectDTO? OriginalSelectedAreaObject { get; set; }
     
     public bool IsSelectedAreaObject => SelectedAreaObject != null;
 
@@ -67,26 +75,12 @@ public class MainWindowViewModel : ViewModelBase
         { AreaObjectType.RealEstate, "Nehnuteľnosť" }
     };
     
-    public List<char> CoordinateXDirection { get; set; } = new() { 'E', 'W' };
+    public List<char> CoordinateXDirection { get; set; } = ['E', 'W'];
     
-    public List<char> CoordinateYDirection { get; set; } = new() { 'N', 'S' };
+    public List<char> CoordinateYDirection { get; set; } = ['N', 'S'];
 
     public MainWindowViewModel()
     {
         AreaObjects = new ObservableCollection<AreaObjectDTO>();
-    }
-    
-    public void RefreshSelectedAreaObject()
-    {
-        // situacia ked mame selectnuty objekt a pridame opacny,
-        // ktory s nim koliduje, aby sa hned zobrazil v zozname asociovanych objektov
-        SelectedAreaObject = SelectedAreaObject;
-    }
-    
-    public void RefreshAreaObjects()
-    {
-        var selected = SelectedAreaObject;
-        AreaObjects = new ObservableCollection<AreaObjectDTO>(AreaObjects);
-        SelectedAreaObject = selected;
     }
 }
