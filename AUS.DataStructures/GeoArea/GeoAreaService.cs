@@ -182,39 +182,44 @@ public class GeoAreaService
     {
         var areaObjectToInsert = areaObjectDTO.ToAreaObject();
         
+        Insert(areaObjectToInsert.CoordinateA, areaObjectToInsert);
+            
+        if (areaObjectToInsert.CoordinateA != areaObjectToInsert.CoordinateB)
+        {
+            Insert(areaObjectToInsert.CoordinateB, areaObjectToInsert);
+        }
+        
+        return areaObjectToInsert.ToDTO();
+    }
+
+    private void Insert(GPSCoordinate coordinate, AreaObject areaObjectToInsert)
+    {
         if (areaObjectToInsert.Type == AreaObjectType.RealEstate)
         {
-            var parcelsA = _kdTreeParcels.FindByKey(areaObjectToInsert.CoordinateA);
-            var parcelsB = _kdTreeParcels.FindByKey(areaObjectToInsert.CoordinateB);
-            areaObjectToInsert.AssociatedObjects = parcelsA;
-            areaObjectToInsert.AssociatedObjects.AddRange(parcelsB);
+            var parcels = _kdTreeParcels.FindByKey(coordinate);
+            areaObjectToInsert.AssociatedObjects.AddRange(parcels);
 
             foreach (var parcel in areaObjectToInsert.AssociatedObjects)
             {
                 parcel.AssociatedObjects.Add(areaObjectToInsert);
             }
             
-            _kdTreeRealEstates.Insert(areaObjectToInsert.CoordinateA, areaObjectToInsert);
-            _kdTreeRealEstates.Insert(areaObjectToInsert.CoordinateB, areaObjectToInsert);
+            _kdTreeRealEstates.Insert(coordinate, areaObjectToInsert);
         }
         else
         {
-            var realEstatesA = _kdTreeRealEstates.FindByKey(areaObjectToInsert.CoordinateA);
-            var realEstatesB = _kdTreeRealEstates.FindByKey(areaObjectToInsert.CoordinateB);
-            areaObjectToInsert.AssociatedObjects = realEstatesA;
-            areaObjectToInsert.AssociatedObjects.AddRange(realEstatesB);
+            var realEstates = _kdTreeRealEstates.FindByKey(coordinate);
+            areaObjectToInsert.AssociatedObjects.AddRange(realEstates);
             
             foreach (var realEstate in areaObjectToInsert.AssociatedObjects)
             {
                 realEstate.AssociatedObjects.Add(areaObjectToInsert);
             }
             
-            _kdTreeParcels.Insert(areaObjectToInsert.CoordinateA, areaObjectToInsert);
-            _kdTreeParcels.Insert(areaObjectToInsert.CoordinateB, areaObjectToInsert);
+            _kdTreeParcels.Insert(coordinate, areaObjectToInsert);
         }
-        
-        return areaObjectToInsert.ToDTO();
     }
+    
     
     public void Delete(AreaObjectDTO areaObject)
     {
@@ -228,14 +233,22 @@ public class GeoAreaService
         if (areaObject.Type == AreaObjectType.Parcel)
         {
             var deletedAreaObject = _kdTreeParcels.Delete(coordinateA, areaObjectWithInternalId);
-            _kdTreeParcels.Delete(coordinateB, areaObjectWithInternalId);
+            
+            if (coordinateA != coordinateB)
+            {
+                _kdTreeParcels.Delete(coordinateB, areaObjectWithInternalId);
+            }
 
             associatedObjects = deletedAreaObject.AssociatedObjects;
         }
         else
         {
             var deletedAreaObject = _kdTreeRealEstates.Delete(coordinateA, areaObjectWithInternalId);
-            _kdTreeRealEstates.Delete(coordinateB, areaObjectWithInternalId);
+            
+            if (coordinateA != coordinateB)
+            {
+                _kdTreeRealEstates.Delete(coordinateB, areaObjectWithInternalId);
+            }
 
             associatedObjects = deletedAreaObject.AssociatedObjects;
         }
@@ -391,11 +404,11 @@ public class GeoAreaService
 
     public void SaveToFolder(Uri pathToFolder)
     {
-        // TODO: Potom nezabudnut aby boli spravne nastavene asociovane objekty
-        
         var realEstatesPath = Path.Combine(pathToFolder.LocalPath, "realEstates.csv");
+        var parcelsPath = Path.Combine(pathToFolder.LocalPath, "parcels.csv");
         
         SaveRealEstatesToFile(realEstatesPath);
+        SaveParcelsToFile(parcelsPath);
     }
 
     public void SaveRealEstatesToFile(string path)
@@ -421,6 +434,23 @@ public class GeoAreaService
     
     public void SaveParcelsToFile(string path)
     {
+        using var writer = new StreamWriter(path);
+        
+        _kdTreeParcels.ExecuteLevelOrder((key, areaObjects) =>
+        {
+            writer.Write($"{key.X};{key.Y}");
+            
+            foreach (var areaObject in areaObjects)
+            {
+                if (areaObject.CoordinateA == key)
+                {
+                    // zapis bez duplicitnej suradnice cize kluca
+                    writer.Write($";{areaObject.ToReducedCSV()}");
+                }
+            }
+            
+            writer.WriteLine();
+        });
     }
 
     #endregion
@@ -433,8 +463,10 @@ public class GeoAreaService
         _kdTreeParcels.Clear();
         
         var realEstatesPath = Path.Combine(pathToFolder.LocalPath, "realEstates.csv");
+        var parcelsPath = Path.Combine(pathToFolder.LocalPath, "parcels.csv");
         
         LoadRealEstatesFromFile(realEstatesPath);
+        LoadParcelsFromFile(parcelsPath);
     }
     
     public void LoadRealEstatesFromFile(string path)
@@ -481,7 +513,7 @@ public class GeoAreaService
                     Description = segments[i + 3]
                 };
                 
-                _kdTreeRealEstates.Insert(coordinateA, areaObject);
+                Insert(coordinateA, areaObject);
                 
                 areaObjects.Add(areaObject);
             }
@@ -490,9 +522,69 @@ public class GeoAreaService
         // adding real estates by secondary coordinate
         foreach (var areaObject in areaObjects)
         {
-            _kdTreeRealEstates.Insert(areaObject.CoordinateB, areaObject);
+            Insert(areaObject.CoordinateB, areaObject);
         }
     }
+
+    public void LoadParcelsFromFile(string path)
+    {
+        using var reader = new StreamReader(path);
+        
+        var areaObjects = new List<AreaObject>();
+        
+        while (!reader.EndOfStream)
+        {
+            var line = reader.ReadLine();
+            
+            // TODO: naimplementovat reescapeovanie riadku zatedy ignorujeme
+            
+            // TODO: refactor do jednej metody??
+            
+            var segments = line.Split(';');
+            
+            if (segments.Length < 2)
+            {
+                throw new ArgumentException("Invalid file format");
+            }
+            
+            var coordinateA = new GPSCoordinate(double.Parse(segments[0]), double.Parse(segments[1]));
+            
+            // vzdy 2 + (4 * n) segmentov, kde n je pocet objektov
+            if ((segments.Length - 2) % 4 != 0)
+            {
+                throw new ArgumentException("Invalid file format");
+            }
+            
+            if (segments.Length == 2)
+            {
+                _kdTreeParcels.Insert(coordinateA);
+                continue;
+            }
+            
+            for (var i = 2; i < segments.Length; i += 4)
+            {
+                var areaObject = new AreaObject
+                {
+                    Type = AreaObjectType.Parcel,
+                    CoordinateA = coordinateA,
+                    CoordinateB = new GPSCoordinate(double.Parse(segments[i]), double.Parse(segments[i + 1])),
+                    Id = int.Parse(segments[i + 2]),
+                    Description = segments[i + 3]
+                };
+                
+                Insert(coordinateA, areaObject);
+                
+                areaObjects.Add(areaObject);
+            }
+        }
+        
+        // adding parcels by secondary coordinate
+        foreach (var areaObject in areaObjects)
+        {
+            Insert(areaObject.CoordinateB, areaObject);
+        }
+    }
+
     
     #endregion
 }

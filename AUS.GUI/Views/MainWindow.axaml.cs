@@ -113,6 +113,11 @@ public partial class MainWindow : Window
         var folder = folderDialogResult[0].Path;
         
         _geoAreaService.LoadFromFolder(folder);
+        
+        var viewModel = (MainWindowViewModel)DataContext!;
+        
+        viewModel.SelectedAreaObject = null;
+        viewModel.AreaObjects.Clear();
     }
 
     private void SaveAreaObjectButton_OnClick(object? sender, RoutedEventArgs e)

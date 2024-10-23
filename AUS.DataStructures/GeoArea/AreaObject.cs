@@ -14,7 +14,7 @@ public class AreaObject
 
     public GPSCoordinate CoordinateB { get; set; } = new(0, 0);
 
-    public List<AreaObject> AssociatedObjects { get; set; } = new();
+    public List<AreaObject> AssociatedObjects { get; private set; } = new();
 
     public AreaObject(Guid? internalId = null)
     {

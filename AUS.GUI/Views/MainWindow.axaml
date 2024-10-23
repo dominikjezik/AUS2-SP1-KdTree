@@ -47,7 +47,7 @@
                     <Button Content="+ Pridať" Margin="10 0 0 0" Click="CreateButton_OnClick" />
                     <Button Content="+ Generator" Margin="10 0 0 0" Click="GenerateButton_OnClick" />
                     <Button Content="Uložiť ako..." Margin="10 0 0 0" Click="SaveToFileButton_OnClick" />
-                    <Button Content="Načítať zo súboru" Margin="10 0 0 0" Click="LoadFromFileButton_OnClick" />
+                    <Button Content="Načítať zo súborov..." Margin="10 0 0 0" Click="LoadFromFileButton_OnClick" />
                 </StackPanel>
                 
                 <Label Grid.Row="0" Grid.Column="3" VerticalAlignment="Center">Typ objektu:</Label>
