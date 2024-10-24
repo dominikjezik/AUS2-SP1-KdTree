@@ -69,7 +69,7 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
 
     public List<TData> FindByKey(TKey keyForSearch)
     {
-        var isFound = TryFindNode(keyForSearch, out var foundNode, out var _);
+        var isFound = TryFindNode(keyForSearch, out var foundNode, out _);
 
         if (!isFound)
         {
@@ -77,6 +77,11 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
         }
         
         return new List<TData>(foundNode!.Data);
+    }
+    
+    public bool Contains(TKey keyForSearch)
+    {
+        return TryFindNode(keyForSearch, out _, out _);
     }
 
     public void Insert(TKey keyForInsert, TData data)
@@ -222,7 +227,8 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
         // 1. FAZA - Odstranenie najdeneho uzla a rekurzivne hladanie nahradnika (min/max) az po odstranenie listu
         
         // Zoznam nodov, ktore musime tiez zmazat a opatovne pridat (LEBO DUPLICITY)
-        var nodesToDelete = new List<KDTreeNodeWithDimension<TKey, TData>>();
+        //var nodesToDelete = new List<KDTreeNodeWithDimension<TKey, TData>>();
+        var nodesToDelete = new LinkedList<KDTreeNodeWithDimension<TKey, TData>>();
         
         // Zoznam nodov, ktore musime nasledne opatovne pridat nanovo
         var nodesToAdd = new List<(TKey, List<TData>)>();
@@ -233,11 +239,10 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
             if (foundNode == null)
             {
                 // 2. FAZA - mazanie foundNodu sa dokoncilo, teraz postupne odstranujeme nody zo zoznamu nodesToDelete
-                // TODO: Otazka optimalizacie - nebrat radsej prvky od konca lebo je vacsia pravdepodobnost ze su blizsie k listu?
-                foundNode = nodesToDelete[0].Node;
-                lastDimenstion = nodesToDelete[0].Dimension;
+                foundNode = nodesToDelete.First!.Value.Node;
+                lastDimenstion = nodesToDelete.First!.Value.Dimension;
                 
-                nodesToDelete.RemoveAt(0);
+                nodesToDelete.RemoveFirst();
                 
                 // Zaznamename node aby sme ho mohli neskor znova pridat
                 nodesToAdd.Add((foundNode.Key, foundNode.Data));
@@ -278,18 +283,18 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
             
             
             List<KDTreeNodeWithDimension<TKey, TData>> replacementNodes;
-            
-            if (foundNode.RightNode != null)
+
+            if (foundNode.LeftNode != null)
             {
-                // Pravy podstrom je k dispozici => hladame v pravom podstrome minimum podla lastDimension
-                replacementNodes = FindMinimumBy(lastDimenstion, foundNode.RightNode);
-                //replacementNode = FindMinimumBy(lastDimenstion, foundNode.RightNode, out lastDimenstion);
+                // Lavý podstrom je k dispozicii => hladame v lavom podstrome maximum podla lastDimension
+                var replacementNode = FindMaximumBy(lastDimenstion, foundNode.LeftNode);
+                replacementNodes = [ replacementNode ];
             }
             else
             {
-                // Pravy podstrom nie je => hladame v lavom podstrome maximum podla lastDimension
-                replacementNodes = FindMaximumBy(lastDimenstion, foundNode.LeftNode);
-                //replacementNode = FindMaximumBy(lastDimenstion, foundNode.LeftNode, out lastDimenstion);
+                // Lavý podstrom nie je => hladame v pravom podstrome minimum podla lastDimension
+                // Chceme aj vsetky duplicity podla daneho kluca
+                replacementNodes = FindMinimumBy(lastDimenstion, foundNode.RightNode);
             }
             
             var selectedReplacementNode = replacementNodes[0];
@@ -300,28 +305,41 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
             
             replacementNodes[0] = new(foundNode, lastDimenstion);
             
-            // Ak je v replacementNodes viac prvkov tak ich je treba zaznamenat do nodesToDelete
-            // pozor: prvky sa tu uz mozu vyskytovat preto treba skontrolovat ci su uz tam a ak ano tak iba aktualizovat ich dimenziu
-            foreach (var replacementNode in replacementNodes)
+            
+            
+            // Kontrola ci je nahradnik (replacementNodes[0]) uz v nodesToDelete
+            // => ak ano treba ho aktualizovat (zmena dimenzie)
+
+            var firstReplacementNode = replacementNodes[0];
+            
+            var iteratedLinkedListNode = nodesToDelete.First;
+               
+            while (iteratedLinkedListNode != null)
             {
-                var foundNodeIndex = nodesToDelete.FindIndex(x => x.Node.Key.Equals(replacementNode.Node.Key));
-                
-                if (foundNodeIndex == -1)
+                if (iteratedLinkedListNode.Value.Node.Key.Equals(firstReplacementNode.Node.Key))
                 {
-                    // pridame iba ak je ich viac (cize duplicita)
-                    if (replacementNodes.Count > 1)
-                    {
-                        nodesToDelete.Add(replacementNode);
-                    }
+                    iteratedLinkedListNode.Value = new(firstReplacementNode.Node, firstReplacementNode.Dimension);
+                    break;
                 }
-                else
-                {
-                    //nodesToDelete[foundNodeIndex].Dimension = replacementNode.Dimension;
-                    // TODO: Otázka z hľadiska optimalizácie - je táto aktualizácia vždy nutná? nestačí iba pre selektnutý node aktualizovať node a referenciu?
-                    nodesToDelete[foundNodeIndex] = new(replacementNode.Node, replacementNode.Dimension);
-                }
+                    
+                iteratedLinkedListNode = iteratedLinkedListNode.Next;
+            }
+               
+            // Ak sa nenasiel node v nodesToDelete a su duplicity tak ho pridame 
+            if (iteratedLinkedListNode == null && replacementNodes.Count > 1)
+            {
+                nodesToDelete.AddLast(firstReplacementNode);
             }
             
+            
+            // V pripade duplicitnych prvokv ich pridame do nodesToDelete
+            foreach (var replacementNode in replacementNodes.Skip(1))
+            {
+                if (!nodesToDelete.Any(x => x.Node.Key.Equals(replacementNode.Node.Key)))
+                {
+                    nodesToDelete.AddLast(replacementNode);
+                }
+            }
             
             
             
@@ -422,11 +440,11 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
         return foundMinimalNodes;
     }
     
-    private List<KDTreeNodeWithDimension<TKey, TData>> FindMaximumBy(int targetDimension, KDTreeNode<TKey, TData>? actualNode)
+    private KDTreeNodeWithDimension<TKey, TData> FindMaximumBy(int targetDimension, KDTreeNode<TKey, TData>? actualNode)
     {
         var actualDimension = (targetDimension + 1) % _numberOfDimension;
         
-        var foundMaximalNodes = new List<KDTreeNodeWithDimension<TKey, TData>>();
+        KDTreeNodeWithDimension<TKey, TData>? foundMaximalNode = null;
         
         var stack = new KDTreeDimensionalStack<TKey, TData>();
         
@@ -434,23 +452,18 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
         {
             if (actualNode != null)
             {
-                if (!foundMaximalNodes.Any())
+                if (foundMaximalNode == null)
                 {
-                    foundMaximalNodes.Add(new(actualNode, actualDimension));
+                    foundMaximalNode = new(actualNode, actualDimension);
                 }
                 else
                 {
-                    var compareResult = actualNode.Key.CompareTo(foundMaximalNodes[0].Node.Key, targetDimension);
+                    var compareResult = actualNode.Key.CompareTo(foundMaximalNode.Node.Key, targetDimension);
                     
                     // Nove maximum?
                     if (compareResult > 0)
                     {
-                        foundMaximalNodes.Clear();
-                        foundMaximalNodes.Add(new(actualNode, actualDimension));
-                    }
-                    else if (compareResult == 0)
-                    {
-                        foundMaximalNodes.Add(new(actualNode, actualDimension));
+                        foundMaximalNode = new(actualNode, actualDimension);
                     }
                 }
                 
@@ -482,7 +495,7 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
             }
         }
         
-        return foundMaximalNodes;
+        return foundMaximalNode!;
     }
     
     public void ExecuteInOrder(Action<List<TData>> actionToExec)

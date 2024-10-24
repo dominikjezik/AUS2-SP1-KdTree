@@ -144,7 +144,7 @@ public class KDTreeTester
         for (int i = 0; i < _numberOfDimension; i++)
         {
             //array[i] = _random.Next(1000000);
-            array[i] = _random.Next(100);
+            array[i] = _random.Next(1000);
         }
 
         return new(array);

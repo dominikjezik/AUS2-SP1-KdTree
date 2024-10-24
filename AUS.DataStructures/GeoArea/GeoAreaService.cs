@@ -7,6 +7,7 @@ public class GeoAreaService
 {
     private readonly KDTree<GPSCoordinate, AreaObject> _kdTreeRealEstates = new(2);
     private readonly KDTree<GPSCoordinate, AreaObject> _kdTreeParcels = new(2);
+    
     private readonly Random _random = new();
     
     #region FindOperations
@@ -286,7 +287,6 @@ public class GeoAreaService
                     .First(a => a.InternalId == originalAreaObject.InternalId);
             }
             
-            
             int.TryParse(updatedAreaObject.Id, out var newId);
 
             foundAreaObject.Id = newId;
@@ -301,7 +301,7 @@ public class GeoAreaService
     
     #endregion
 
-    #region GenerateOperations
+    #region GenerateAreaObjects
     
     public void GenerateAreaObjects(int count, double probabilityOfOverlay, int minX, int maxX, int minY, int maxY, int numberOfDecimalPlaces, bool generateRandomDescription)
     {
@@ -519,7 +519,7 @@ public class GeoAreaService
             }
         }
         
-        // adding real estates by secondary coordinate
+        // Pridanie objektov podla sekundarnej suradnice
         foreach (var areaObject in areaObjects)
         {
             Insert(areaObject.CoordinateB, areaObject);
@@ -578,7 +578,7 @@ public class GeoAreaService
             }
         }
         
-        // adding parcels by secondary coordinate
+        // Pridanie objektov podla sekundarnej suradnice
         foreach (var areaObject in areaObjects)
         {
             Insert(areaObject.CoordinateB, areaObject);

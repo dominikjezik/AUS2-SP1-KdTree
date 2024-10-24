@@ -108,7 +108,6 @@ public class AreaObjectDTO
 
     public bool AreCoordinatesChanged(AreaObjectDTO another)
     {
-        // TODO: Otestovat
         return CoordinateA != another.CoordinateA || CoordinateB != another.CoordinateB;
     }
 }
