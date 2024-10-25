@@ -66,59 +66,31 @@ public class AreaObject
     
     public string ToReducedCSV()
     {
-        // TODO: Otestovat
-        
-        // Escapeovaci mechanizmus na nahradenie pripadnych ; a \ v popise objektu
-        var escapedDescription = Description.Replace(@"\", @"\\").Replace(";", @"\;");
-        return $"{CoordinateB.X};{CoordinateB.Y};{Id};{escapedDescription}";
+        // Odstranenie separatora CSV z popisu objekt
+        var reducedDescription = Description.Replace(";", string.Empty);
+        return $"{CoordinateB.X};{CoordinateB.Y};{Id};{reducedDescription}";
     }
-}
 
-public static class AreaObjectExtensions
-{
-    public static AreaObject ToAreaObject(this AreaObjectDTO areaObjectDTO)
+    public static List<AreaObject> FromReducedCSV(string[] segments)
     {
-        if (!int.TryParse(areaObjectDTO.Id, out var id))
+        var coordinateA = new GPSCoordinate(double.Parse(segments[0]), double.Parse(segments[1]));
+
+        var areaObjects = new List<AreaObject>();
+        
+        for (var i = 2; i < segments.Length; i += 4)
         {
-            id = 0;
+            var areaObject = new AreaObject
+            {
+                Type = AreaObjectType.RealEstate,
+                CoordinateA = coordinateA,
+                CoordinateB = new GPSCoordinate(double.Parse(segments[i]), double.Parse(segments[i + 1])),
+                Id = int.Parse(segments[i + 2]),
+                Description = segments[i + 3]
+            };
+            
+            areaObjects.Add(areaObject);
         }
         
-        if (!double.TryParse(areaObjectDTO.CoordinateAX, out var coordinateAX))
-        {
-            coordinateAX = 0;
-        }
-        
-        if (!double.TryParse(areaObjectDTO.CoordinateAY, out var coordinateAY))
-        {
-            coordinateAY = 0;
-        }
-        
-        if (!double.TryParse(areaObjectDTO.CoordinateBX, out var coordinateBX))
-        {
-            coordinateBX = 0;
-        }
-        
-        if (!double.TryParse(areaObjectDTO.CoordinateBY, out var coordinateBY))
-        {
-            coordinateBY = 0;
-        }
-        
-        // E (East) +, W (West) - => X
-        // N (North) +, S (South) - => Y
-        
-        return new AreaObject
-        {
-            Type = areaObjectDTO.Type,
-            Description = areaObjectDTO.Description,
-            Id = id,
-            CoordinateA = new GPSCoordinate(
-                areaObjectDTO.CoordinateAXDirection == 'W' ? -coordinateAX : coordinateAX,
-                areaObjectDTO.CoordinateAYDirection == 'S' ? -coordinateAY : coordinateAY
-            ),
-            CoordinateB = new GPSCoordinate(
-                areaObjectDTO.CoordinateBXDirection == 'W' ? -coordinateBX : coordinateBX,
-                areaObjectDTO.CoordinateBYDirection == 'S' ? -coordinateBY : coordinateBY
-            )
-        };
+        return areaObjects;
     }
 }

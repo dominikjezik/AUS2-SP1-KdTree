@@ -227,13 +227,12 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
         // 1. FAZA - Odstranenie najdeneho uzla a rekurzivne hladanie nahradnika (min/max) az po odstranenie listu
         
         // Zoznam nodov, ktore musime tiez zmazat a opatovne pridat (LEBO DUPLICITY)
-        //var nodesToDelete = new List<KDTreeNodeWithDimension<TKey, TData>>();
         var nodesToDelete = new LinkedList<KDTreeNodeWithDimension<TKey, TData>>();
         
         // Zoznam nodov, ktore musime nasledne opatovne pridat nanovo
         var nodesToAdd = new List<(TKey, List<TData>)>();
 
-        // Proces bude bezat pokial najdeny nahradnik (min) nie je listom
+        // Proces bude bezat pokial najdeny nahradnik nie je listom alebo pokial je nieco v zozname na delete
         while (foundNode != null || nodesToDelete.Any())
         {
             if (foundNode == null)

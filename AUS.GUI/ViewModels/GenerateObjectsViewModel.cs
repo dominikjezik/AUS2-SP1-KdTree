@@ -1,16 +1,27 @@
 ﻿namespace AUS.GUI.ViewModels;
 
-public class GenerateOperationsViewModel : ViewModelBase
+public class GenerateObjectsViewModel : ViewModelBase
 {
-    private int _countOfOperations = 1000;
+    private int _countOfParcels = 1000;
+    private int _countOfRealEstates = 1000;
     private double _probabilityOfOverlay = 0.5;
     
-    public int CountOfOperations
+    public int CountOfParcels
     {
-        get => _countOfOperations;
+        get => _countOfParcels;
         set
         {
-            _countOfOperations = value;
+            _countOfParcels = value;
+            OnPropertyChanged();
+        }
+    }
+    
+    public int CountOfRealEstates
+    {
+        get => _countOfRealEstates;
+        set
+        {
+            _countOfRealEstates = value;
             OnPropertyChanged();
         }
     }

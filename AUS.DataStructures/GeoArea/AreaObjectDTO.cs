@@ -110,4 +110,50 @@ public class AreaObjectDTO
     {
         return CoordinateA != another.CoordinateA || CoordinateB != another.CoordinateB;
     }
+    
+    public AreaObject ToAreaObject()
+    {
+        if (!int.TryParse(Id, out var id))
+        {
+            id = 0;
+        }
+        
+        if (!double.TryParse(CoordinateAX, out var coordinateAX))
+        {
+            coordinateAX = 0;
+        }
+        
+        if (!double.TryParse(CoordinateAY, out var coordinateAY))
+        {
+            coordinateAY = 0;
+        }
+        
+        if (!double.TryParse(CoordinateBX, out var coordinateBX))
+        {
+            coordinateBX = 0;
+        }
+        
+        if (!double.TryParse(CoordinateBY, out var coordinateBY))
+        {
+            coordinateBY = 0;
+        }
+        
+        // E (East) +, W (West) - => X
+        // N (North) +, S (South) - => Y
+        
+        return new AreaObject
+        {
+            Type = Type,
+            Description = Description,
+            Id = id,
+            CoordinateA = new GPSCoordinate(
+                CoordinateAXDirection == 'W' ? -coordinateAX : coordinateAX,
+                CoordinateAYDirection == 'S' ? -coordinateAY : coordinateAY
+            ),
+            CoordinateB = new GPSCoordinate(
+                CoordinateBXDirection == 'W' ? -coordinateBX : coordinateBX,
+                CoordinateBYDirection == 'S' ? -coordinateBY : coordinateBY
+            )
+        };
+    }
 }

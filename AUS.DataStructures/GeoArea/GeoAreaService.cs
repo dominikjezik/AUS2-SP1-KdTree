@@ -7,6 +7,7 @@ public class GeoAreaService
 {
     private readonly KDTree<GPSCoordinate, AreaObject> _kdTreeRealEstates = new(2);
     private readonly KDTree<GPSCoordinate, AreaObject> _kdTreeParcels = new(2);
+    private readonly KDTree<GPSCoordinate, AreaObject> _kdTreeAreaObjects = new(2);
     
     private readonly Random _random = new();
     
@@ -80,8 +81,7 @@ public class GeoAreaService
         }
         else
         {
-            _kdTreeRealEstates.ExecuteInOrder(result.AddRange);
-            _kdTreeParcels.ExecuteInOrder(result.AddRange);
+            _kdTreeAreaObjects.ExecuteInOrder(result.AddRange);
         }
 
         return result.Distinct().Select(a => a.ToDTO()).ToList();
@@ -138,10 +138,8 @@ public class GeoAreaService
     
     public List<AreaObjectDTO> FindAreaObjects(GPSCoordinate coordinate)
     {
-        var result = _kdTreeRealEstates.FindByKey(coordinate);
-        var tmp = _kdTreeParcels.FindByKey(coordinate);
-        result.AddRange(tmp);
-        return result.Distinct().Select(a => a.ToDTO()).ToList();
+        return _kdTreeAreaObjects.FindByKey(coordinate)
+                .Distinct().Select(a => a.ToDTO()).ToList();
     }
     
     public List<AreaObjectDTO> FindRealEstates(GPSCoordinate coordinateA, GPSCoordinate coordinateB)
@@ -162,16 +160,9 @@ public class GeoAreaService
 
     public List<AreaObjectDTO> FindAreaObjects(GPSCoordinate coordinateA, GPSCoordinate coordinateB)
     {
-        var result = _kdTreeRealEstates.FindByKey(coordinateA);
-        var tmp = _kdTreeRealEstates.FindByKey(coordinateB);
+        var result = _kdTreeAreaObjects.FindByKey(coordinateA);
+        var tmp = _kdTreeAreaObjects.FindByKey(coordinateB);
         result.AddRange(tmp);
-        
-        tmp = _kdTreeParcels.FindByKey(coordinateA);
-        result.AddRange(tmp);
-
-        tmp = _kdTreeParcels.FindByKey(coordinateB);
-        result.AddRange(tmp);
-
         return result.Distinct().Select(a => a.ToDTO()).ToList();
     }
     
@@ -219,8 +210,9 @@ public class GeoAreaService
             
             _kdTreeParcels.Insert(coordinate, areaObjectToInsert);
         }
+        
+        _kdTreeAreaObjects.Insert(coordinate, areaObjectToInsert);
     }
-    
     
     public void Delete(AreaObjectDTO areaObject)
     {
@@ -266,6 +258,14 @@ public class GeoAreaService
                 associatedObjectOfAnother.Remove(associatedObjectToDelete);
             }
         }
+        
+        // Zmazanie zo spolocneho stromu
+        _kdTreeAreaObjects.Delete(coordinateA, areaObjectWithInternalId);
+        
+        if (coordinateA != coordinateB)
+        {
+            _kdTreeAreaObjects.Delete(coordinateB, areaObjectWithInternalId);
+        }
     }
     
     public AreaObjectDTO Update(AreaObjectDTO originalAreaObject, AreaObjectDTO updatedAreaObject)
@@ -303,29 +303,29 @@ public class GeoAreaService
 
     #region GenerateAreaObjects
     
-    public void GenerateAreaObjects(int count, double probabilityOfOverlay, int minX, int maxX, int minY, int maxY, int numberOfDecimalPlaces, bool generateRandomDescription)
+    public void GenerateAreaObjects(GenerateAreaObjectsOptions options)
     {
         List<AreaObjectDTO> realEstates = new();
         List<AreaObjectDTO> parcels = new();
         
-        for (var i = 0; i < count; i++)
+        for (var i = 0; i < options.CountOfParcels + options.CountOfRealEstates; i++)
         {
-            var objectType = _random.NextDouble() < 0.5 ? AreaObjectType.RealEstate : AreaObjectType.Parcel;
+            var objectType = i < options.CountOfParcels ? AreaObjectType.Parcel : AreaObjectType.RealEstate;
             
-            var coordinateAX = _random.Next(-minX, maxX) + _random.NextDouble();
-            coordinateAX = Math.Round(coordinateAX, numberOfDecimalPlaces);
+            var coordinateAX = _random.Next(-options.MinX, options.MaxX) + _random.NextDouble();
+            coordinateAX = Math.Round(coordinateAX, options.NumberOfDecimalPlaces);
             var coordinateAXDirection = coordinateAX < 0 ? 'W' : 'E';
             
-            var coordinateAY = _random.Next(-minY, maxY) + _random.NextDouble();
-            coordinateAY = Math.Round(coordinateAY, numberOfDecimalPlaces);
+            var coordinateAY = _random.Next(-options.MinY, options.MaxY) + _random.NextDouble();
+            coordinateAY = Math.Round(coordinateAY, options.NumberOfDecimalPlaces);
             var coordinateAYDirection = coordinateAY < 0 ? 'S' : 'N';
 
-            double coordinateBX = 0;
-            char coordinateBXDirection = ' ';
-            double coordinateBY = 0;
-            char coordinateBYDirection = ' ';
+            double coordinateBX;
+            char coordinateBXDirection;
+            double coordinateBY;
+            char coordinateBYDirection;
             
-            if (_random.NextDouble() < probabilityOfOverlay && ((objectType == AreaObjectType.RealEstate && parcels.Count > 0) || (objectType == AreaObjectType.Parcel && realEstates.Count > 0)))
+            if (_random.NextDouble() < options.ProbabilityOfOverlay && ((objectType == AreaObjectType.RealEstate && parcels.Count > 0) || (objectType == AreaObjectType.Parcel && realEstates.Count > 0)))
             {
                 var randomIndex = _random.Next(0, objectType == AreaObjectType.RealEstate ? parcels.Count : realEstates.Count);
                 var randomObject = objectType == AreaObjectType.RealEstate ? parcels[randomIndex] : realEstates[randomIndex];
@@ -338,19 +338,19 @@ public class GeoAreaService
             }
             else
             {
-                coordinateBX = _random.Next(-minX, maxX) + _random.NextDouble();
-                coordinateBX = Math.Round(coordinateBX, numberOfDecimalPlaces);
+                coordinateBX = _random.Next(-options.MinX, options.MaxX) + _random.NextDouble();
+                coordinateBX = Math.Round(coordinateBX, options.NumberOfDecimalPlaces);
                 coordinateBXDirection = coordinateBX < 0 ? 'W' : 'E';
             
-                coordinateBY = _random.Next(-minY, maxY) + _random.NextDouble();
-                coordinateBY = Math.Round(coordinateBY, numberOfDecimalPlaces);
+                coordinateBY = _random.Next(-options.MinY, options.MaxY) + _random.NextDouble();
+                coordinateBY = Math.Round(coordinateBY, options.NumberOfDecimalPlaces);
                 coordinateBYDirection = coordinateBY < 0 ? 'S' : 'N';
             }
             
             var areaObject = new AreaObjectDTO
             {
                 Type = objectType,
-                Description = generateRandomDescription ? GenerateDescription() : string.Empty,
+                Description = options.GenerateRandomDescription ? GenerateDescription() : string.Empty,
                 Id = _random.Next(1, 99999).ToString(),
                 CoordinateAX = Math.Abs(coordinateAX).ToString(),
                 CoordinateAXDirection = coordinateAXDirection,
@@ -461,6 +461,7 @@ public class GeoAreaService
     {
         _kdTreeRealEstates.Clear();
         _kdTreeParcels.Clear();
+        _kdTreeAreaObjects.Clear();
         
         var realEstatesPath = Path.Combine(pathToFolder.LocalPath, "realEstates.csv");
         var parcelsPath = Path.Combine(pathToFolder.LocalPath, "parcels.csv");
@@ -469,55 +470,35 @@ public class GeoAreaService
         LoadParcelsFromFile(parcelsPath);
     }
     
-    public void LoadRealEstatesFromFile(string path)
+    private void LoadRealEstatesFromFile(string path)
     {
-        using var reader = new StreamReader(path);
-        
         var areaObjects = new List<AreaObject>();
         
-        while (!reader.EndOfStream)
+        LoadFile(path, segments =>
         {
-            var line = reader.ReadLine();
-            
-            // TODO: naimplementovat reescapeovanie riadku zatedy ignorujeme
-            
-            var segments = line.Split(';');
-            
-            if (segments.Length < 2)
-            {
-                throw new ArgumentException("Invalid file format");
-            }
-            
-            var coordinateA = new GPSCoordinate(double.Parse(segments[0]), double.Parse(segments[1]));
-            
             // vzdy 2 + (4 * n) segmentov, kde n je pocet objektov
             if ((segments.Length - 2) % 4 != 0)
             {
                 throw new ArgumentException("Invalid file format");
             }
-            
+
             if (segments.Length == 2)
             {
+                var coordinateA = new GPSCoordinate(double.Parse(segments[0]), double.Parse(segments[1]));
                 _kdTreeRealEstates.Insert(coordinateA);
-                continue;
             }
-            
-            for (var i = 2; i < segments.Length; i += 4)
+            else
             {
-                var areaObject = new AreaObject
+                var areaObjectsFromSegments = AreaObject.FromReducedCSV(segments);
+            
+                foreach (var areaObject in areaObjectsFromSegments)
                 {
-                    Type = AreaObjectType.RealEstate,
-                    CoordinateA = coordinateA,
-                    CoordinateB = new GPSCoordinate(double.Parse(segments[i]), double.Parse(segments[i + 1])),
-                    Id = int.Parse(segments[i + 2]),
-                    Description = segments[i + 3]
-                };
+                    Insert(areaObject.CoordinateA, areaObject);
+                }
                 
-                Insert(coordinateA, areaObject);
-                
-                areaObjects.Add(areaObject);
+                areaObjects.AddRange(areaObjectsFromSegments);
             }
-        }
+        });
         
         // Pridanie objektov podla sekundarnej suradnice
         foreach (var areaObject in areaObjects)
@@ -528,17 +509,48 @@ public class GeoAreaService
 
     public void LoadParcelsFromFile(string path)
     {
-        using var reader = new StreamReader(path);
-        
         var areaObjects = new List<AreaObject>();
+        
+        LoadFile(path, segments =>
+        {
+            // vzdy 2 + (4 * n) segmentov, kde n je pocet objektov
+            if ((segments.Length - 2) % 4 != 0)
+            {
+                throw new ArgumentException("Invalid file format");
+            }
+
+            if (segments.Length == 2)
+            {
+                var coordinateA = new GPSCoordinate(double.Parse(segments[0]), double.Parse(segments[1]));
+                _kdTreeParcels.Insert(coordinateA);
+            }
+            else
+            {
+                var areaObjectsFromSegments = AreaObject.FromReducedCSV(segments);
+            
+                foreach (var areaObject in areaObjectsFromSegments)
+                {
+                    Insert(areaObject.CoordinateA, areaObject);
+                }
+                
+                areaObjects.AddRange(areaObjectsFromSegments);
+            }
+        });
+        
+        // Pridanie objektov podla sekundarnej suradnice
+        foreach (var areaObject in areaObjects)
+        {
+            Insert(areaObject.CoordinateB, areaObject);
+        }
+    }
+    
+    private void LoadFile(string path, Action<string[]> actionForLine)
+    {
+        using var reader = new StreamReader(path);
         
         while (!reader.EndOfStream)
         {
             var line = reader.ReadLine();
-            
-            // TODO: naimplementovat reescapeovanie riadku zatedy ignorujeme
-            
-            // TODO: refactor do jednej metody??
             
             var segments = line.Split(';');
             
@@ -547,44 +559,9 @@ public class GeoAreaService
                 throw new ArgumentException("Invalid file format");
             }
             
-            var coordinateA = new GPSCoordinate(double.Parse(segments[0]), double.Parse(segments[1]));
-            
-            // vzdy 2 + (4 * n) segmentov, kde n je pocet objektov
-            if ((segments.Length - 2) % 4 != 0)
-            {
-                throw new ArgumentException("Invalid file format");
-            }
-            
-            if (segments.Length == 2)
-            {
-                _kdTreeParcels.Insert(coordinateA);
-                continue;
-            }
-            
-            for (var i = 2; i < segments.Length; i += 4)
-            {
-                var areaObject = new AreaObject
-                {
-                    Type = AreaObjectType.Parcel,
-                    CoordinateA = coordinateA,
-                    CoordinateB = new GPSCoordinate(double.Parse(segments[i]), double.Parse(segments[i + 1])),
-                    Id = int.Parse(segments[i + 2]),
-                    Description = segments[i + 3]
-                };
-                
-                Insert(coordinateA, areaObject);
-                
-                areaObjects.Add(areaObject);
-            }
-        }
-        
-        // Pridanie objektov podla sekundarnej suradnice
-        foreach (var areaObject in areaObjects)
-        {
-            Insert(areaObject.CoordinateB, areaObject);
+            actionForLine(segments);
         }
     }
-
     
     #endregion
 }

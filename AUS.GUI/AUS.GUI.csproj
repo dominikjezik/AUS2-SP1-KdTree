@@ -32,7 +32,7 @@
         <DependentUpon>DetailsWindow.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
-      <Compile Update="Views\GenerateOperationsWindow.axaml.cs">
+      <Compile Update="Views\GenerateObjectsWindow.axaml.cs">
         <DependentUpon>GenerateOperationsWindow.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>

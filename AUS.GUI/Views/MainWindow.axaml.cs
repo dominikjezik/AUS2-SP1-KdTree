@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using AUS.DataStructures.GeoArea;
-using AUS.GUI.Models;
 using AUS.GUI.ViewModels;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -34,23 +33,14 @@ public partial class MainWindow : Window
     
     private void GenerateButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        var generateWindow = new GenerateOperationsWindow();
-        generateWindow.GenerateOperations += OnGenerateOperations;
-        generateWindow.ShowDialog(this);
+        var generateObjectsWindow = new GenerateObjectsWindow();
+        generateObjectsWindow.GenerateObjects += OnGenerateObjects;
+        generateObjectsWindow.ShowDialog(this);
     }
     
-    private void OnGenerateOperations(object? sender, GenerateOperationsModel generateOperationsModel)
+    private void OnGenerateObjects(object? sender, GenerateAreaObjectsOptions generateAreaObjectsOptions)
     {
-        _geoAreaService.GenerateAreaObjects(
-            generateOperationsModel.CountOfOperations, 
-            generateOperationsModel.ProbabilityOfOverlay, 
-            generateOperationsModel.MinX, 
-            generateOperationsModel.MaxX, 
-            generateOperationsModel.MinY, 
-            generateOperationsModel.MaxY, 
-            generateOperationsModel.NumberOfDecimalPlaces,
-            generateOperationsModel.GenerateRandomDescription
-        );
+        _geoAreaService.GenerateAreaObjects(generateAreaObjectsOptions);
     }
 
     private void SearchButton_OnClick(object? sender, RoutedEventArgs e)

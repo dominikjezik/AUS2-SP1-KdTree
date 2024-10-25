@@ -1,30 +1,31 @@
 using System;
-using AUS.GUI.Models;
+using AUS.DataStructures.GeoArea;
 using AUS.GUI.ViewModels;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
 namespace AUS.GUI.Views;
 
-public partial class GenerateOperationsWindow : Window
+public partial class GenerateObjectsWindow : Window
 {
     // event property for the SaveButton_OnClick event
-    public event EventHandler<GenerateOperationsModel>? GenerateOperations;
+    public event EventHandler<GenerateAreaObjectsOptions>? GenerateObjects;
     
-    private readonly GenerateOperationsViewModel _viewModel;
+    private readonly GenerateObjectsViewModel _viewModel;
     
-    public GenerateOperationsWindow()
+    public GenerateObjectsWindow()
     {
         InitializeComponent();
-        _viewModel = new GenerateOperationsViewModel();
+        _viewModel = new GenerateObjectsViewModel();
         DataContext = _viewModel;
     }
 
     private void GenerateButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        GenerateOperations?.Invoke(this, new()
+        GenerateObjects?.Invoke(this, new()
         {
-            CountOfOperations = _viewModel.CountOfOperations, 
+            CountOfParcels = _viewModel.CountOfParcels, 
+            CountOfRealEstates = _viewModel.CountOfRealEstates,
             ProbabilityOfOverlay = _viewModel.ProbabilityOfOverlay,
             MinX = _viewModel.MinX,
             MaxX = _viewModel.MaxX,

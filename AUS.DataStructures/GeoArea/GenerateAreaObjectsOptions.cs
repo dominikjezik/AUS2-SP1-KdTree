@@ -1,8 +1,10 @@
-﻿namespace AUS.GUI.Models;
+﻿namespace AUS.DataStructures.GeoArea;
 
-public class GenerateOperationsModel
+public class GenerateAreaObjectsOptions
 {
-    public int CountOfOperations { get; set; }
+    public int CountOfRealEstates { get; set; }
+    
+    public int CountOfParcels { get; set; }
     
     public double ProbabilityOfOverlay { get; set; }
     

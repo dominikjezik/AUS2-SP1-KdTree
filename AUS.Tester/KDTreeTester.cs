@@ -117,7 +117,7 @@ public class KDTreeTester
                 {
                     // Ak je aspon jedna zlozka aktualneho kluca >=, ako minuleho kluca
                     // prejdi na dalsi, malo by to byt OK??
-                    // TODO: otazka ci je toto spravny predpoklad
+                    // Otazka ci je toto spravny predpoklad
                     if (key.Values[i] >= lastKey.Values[i])
                     {
                         foundOkKeyPart = true;
