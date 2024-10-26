@@ -71,7 +71,7 @@ public class AreaObject
         return $"{CoordinateB.X};{CoordinateB.Y};{Id};{reducedDescription}";
     }
 
-    public static List<AreaObject> FromReducedCSV(string[] segments)
+    public static List<AreaObject> FromReducedCSV(string[] segments, AreaObjectType type)
     {
         var coordinateA = new GPSCoordinate(double.Parse(segments[0]), double.Parse(segments[1]));
 
@@ -81,7 +81,7 @@ public class AreaObject
         {
             var areaObject = new AreaObject
             {
-                Type = AreaObjectType.RealEstate,
+                Type = type,
                 CoordinateA = coordinateA,
                 CoordinateB = new GPSCoordinate(double.Parse(segments[i]), double.Parse(segments[i + 1])),
                 Id = int.Parse(segments[i + 2]),

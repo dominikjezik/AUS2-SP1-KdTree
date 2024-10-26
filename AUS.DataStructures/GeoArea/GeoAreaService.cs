@@ -491,7 +491,7 @@ public class GeoAreaService
             }
             else
             {
-                var areaObjectsFromSegments = AreaObject.FromReducedCSV(segments);
+                var areaObjectsFromSegments = AreaObject.FromReducedCSV(segments, AreaObjectType.RealEstate);
             
                 foreach (var areaObject in areaObjectsFromSegments)
                 {
@@ -528,7 +528,7 @@ public class GeoAreaService
             }
             else
             {
-                var areaObjectsFromSegments = AreaObject.FromReducedCSV(segments);
+                var areaObjectsFromSegments = AreaObject.FromReducedCSV(segments, AreaObjectType.Parcel);
             
                 foreach (var areaObject in areaObjectsFromSegments)
                 {

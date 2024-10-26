@@ -96,7 +96,7 @@
                           MaxDropDownHeight="500"
                           HorizontalAlignment="Stretch" 
                           Margin="5 10 5 0"
-                          SelectedValue="{Binding AreaObjectQuery.CoordinateAYDirection}"
+                          SelectedValue="{Binding AreaObjectQuery.CoordinateBYDirection}"
                           ItemsSource="{Binding CoordinateYDirection}" />
                 
                 <Button Grid.Row="0" Grid.Column="11" Content="Vyhľadať" Margin="5 0 10 0" Click="SearchButton_OnClick" />
