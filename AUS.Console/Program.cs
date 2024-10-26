@@ -117,6 +117,3 @@ kdtree.Insert(new(17, 37), a5);
 
 kdtree.Delete(new(64, 38), a3);
 
-var testValue = kdtree.FindByKey(new(17, 85));
-
-var t1 = 0;

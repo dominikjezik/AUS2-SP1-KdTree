@@ -224,7 +224,7 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
 
     private void Delete(KDTreeNode<TKey, TData> foundNode, int lastDimenstion)
     {
-        // 1. FAZA - Odstranenie najdeneho uzla a rekurzivne hladanie nahradnika (min/max) az po odstranenie listu
+        // 1. FAZA - Odstranenie najdeneho uzla a "rekurzivne" hladanie nahradnika (min/max) az po odstranenie listu
         
         // Zoznam nodov, ktore musime tiez zmazat a opatovne pridat (LEBO DUPLICITY)
         var nodesToDelete = new LinkedList<KDTreeNodeWithDimension<TKey, TData>>();
@@ -312,7 +312,7 @@ public class KDTree<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
             var firstReplacementNode = replacementNodes[0];
             
             var iteratedLinkedListNode = nodesToDelete.First;
-               
+            
             while (iteratedLinkedListNode != null)
             {
                 if (iteratedLinkedListNode.Value.Node.Key.Equals(firstReplacementNode.Node.Key))

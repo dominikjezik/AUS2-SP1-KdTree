@@ -1,19 +1,29 @@
-using System.Text;
 using AUS.DataStructures.KDTree;
 
 namespace AUS.Tester;
 
-public class KDTreeTester
+public class KDTreeTester<TKey> where TKey : IKDTreeKeyComparable<TKey>, IKDTreeTesterKey<TKey>, new()
 {
     private readonly Random _random = new();
+    private readonly KDTree<TKey, object> _kdTree;
+    private readonly List<(TKey, object)> _helperList = [];
     private readonly int _numberOfDimension;
-    private readonly KDTree<KDTreeSimpleKey, object> _kdTree;
-    private readonly List<(KDTreeSimpleKey, object)> _helperList = [];
+    
+    private readonly Func<TKey> _generateFunction;
 
-    public KDTreeTester(int numberOfDimension)
+    public KDTreeTester(TKey templateKey)
     {
-        _numberOfDimension = numberOfDimension;
-        _kdTree = new(numberOfDimension);
+        _numberOfDimension = templateKey.NumberOfDimension;
+        _kdTree = new(_numberOfDimension);
+        _generateFunction = () => templateKey.GenerateRandom(_random);
+    }
+    
+    public KDTreeTester()
+    {
+        var dummyTemplateKey = new TKey();
+        
+        _kdTree = new(dummyTemplateKey.NumberOfDimension);
+        _generateFunction = () => dummyTemplateKey.GenerateRandom(_random);
     }
     
     public void TestRandomDataSet(int numberOfOperations, double probInsert)
@@ -37,7 +47,7 @@ public class KDTreeTester
 
     private void TestInsert()
     {
-        var newKey = GenerateNewKeyForInsert();
+        var newKey = _generateFunction();
         var newData = new object();
         Console.WriteLine($"Vygenerovany novy kluc pre vlozenie {newKey}");
         
@@ -53,8 +63,6 @@ public class KDTreeTester
         {
             throw new Exception("Bola volana operacia insert ale find nenasiel polozku");
         }
-
-        TestInorder();
     }
     
     private void TestDelete()
@@ -82,8 +90,6 @@ public class KDTreeTester
         {
             throw new Exception("Bola volana operacia delete ale find nasiel polozku");
         }
-
-        TestInorder();
     }
 
     private void TestFindEveryItem()
@@ -97,103 +103,5 @@ public class KDTreeTester
                 throw new Exception($"Bola volana operacia insert nad klucom {key} ale find nenasiel polozku");
             }
         }
-    }
-
-    private void TestInorder()
-    {
-        KDTreeSimpleKey? lastKey = null;
-        
-        _kdTree.ExecuteInOrder(key =>
-        {
-            if (lastKey == null)
-            {
-                lastKey = key;
-            }
-            else
-            {
-                var foundOkKeyPart = false;
-            
-                for (int i = 0; i < _numberOfDimension; i++)
-                {
-                    // Ak je aspon jedna zlozka aktualneho kluca >=, ako minuleho kluca
-                    // prejdi na dalsi, malo by to byt OK??
-                    // Otazka ci je toto spravny predpoklad
-                    if (key.Values[i] >= lastKey.Values[i])
-                    {
-                        foundOkKeyPart = true;
-                        break;
-                    }
-                }
-
-                if (foundOkKeyPart)
-                {
-                    lastKey = key;
-                }
-                else
-                {
-                    throw new Exception("Nespravne inorder poradie.");
-                }
-            }
-        });
-    }
-
-    private KDTreeSimpleKey GenerateNewKeyForInsert()
-    {
-        var array = new int[_numberOfDimension];
-        
-        for (int i = 0; i < _numberOfDimension; i++)
-        {
-            //array[i] = _random.Next(1000000);
-            array[i] = _random.Next(1000);
-        }
-
-        return new(array);
-    }
-}
-
-public record KDTreeSimpleKey : IKDTreeKeyComparable<KDTreeSimpleKey>
-{
-    public int[] Values { get; }
-    
-    public KDTreeSimpleKey(int[] values)
-    {
-        Values = values;
-    }
-
-    public virtual bool Equals(KDTreeSimpleKey? other)
-    {
-        if (other == null || Values.Length != other.Values.Length)
-        {
-            return false;
-        }
-
-        for (int i = 0; i < Values.Length; i++)
-        {
-            if (Values[i] != other.Values[i])
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public int CompareTo(KDTreeSimpleKey another, int dimension)
-    {
-        return Values[dimension].CompareTo(another.Values[dimension]);
-    }
-
-    public override string ToString()
-    {
-        var result = new StringBuilder("[");
-        
-        for (int i = 0; i < Values.Length; i++)
-        {
-            result.Append($"{Values[i]} ");
-        }
-
-        result.Append("]");
-
-        return result.ToString();
     }
 }

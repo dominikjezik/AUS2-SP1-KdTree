@@ -1,6 +1,6 @@
 ﻿namespace AUS.DataStructures.KDTree;
 
-public class KDTreeNode<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
+internal class KDTreeNode<TKey, TData> where TKey : IKDTreeKeyComparable<TKey>
 {
     public TKey Key { get; set; }
 

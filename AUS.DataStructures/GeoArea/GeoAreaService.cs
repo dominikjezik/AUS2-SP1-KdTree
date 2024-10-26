@@ -92,11 +92,11 @@ public class GeoAreaService
         switch (areaObjectType)
         {
             case AreaObjectType.RealEstate:
-                return FindRealEstates(coordinate).ToList();
+                return FindRealEstates(coordinate);
             case AreaObjectType.Parcel:
-                return FindParcels(coordinate).ToList();
+                return FindParcels(coordinate);
             default:
-                return FindAreaObjects(coordinate).ToList();
+                return FindAreaObjects(coordinate);
         }
     }
     
@@ -105,11 +105,11 @@ public class GeoAreaService
         switch (areaObjectType)
         {
             case AreaObjectType.RealEstate:
-                return FindRealEstates(coordinateA, coordinateB).Distinct().ToList();
+                return FindRealEstates(coordinateA, coordinateB);
             case AreaObjectType.Parcel:
-                return FindParcels(coordinateA, coordinateB).Distinct().ToList();
+                return FindParcels(coordinateA, coordinateB);
             default:
-                return FindAreaObjects(coordinateA, coordinateB).Distinct().ToList();
+                return FindAreaObjects(coordinateA, coordinateB);
         }
     }
 
@@ -128,12 +128,14 @@ public class GeoAreaService
     
     public List<AreaObjectDTO> FindRealEstates(GPSCoordinate coordinate)
     {
-        return _kdTreeRealEstates.FindByKey(coordinate).Distinct().Select(a => a.ToDTO()).ToList();
+        return _kdTreeRealEstates.FindByKey(coordinate)
+                .Distinct().Select(a => a.ToDTO()).ToList();
     }
 
     public List<AreaObjectDTO> FindParcels(GPSCoordinate coordinate)
     {
-        return _kdTreeParcels.FindByKey(coordinate).Distinct().Select(a => a.ToDTO()).ToList();
+        return _kdTreeParcels.FindByKey(coordinate)
+                .Distinct().Select(a => a.ToDTO()).ToList();
     }
     
     public List<AreaObjectDTO> FindAreaObjects(GPSCoordinate coordinate)
