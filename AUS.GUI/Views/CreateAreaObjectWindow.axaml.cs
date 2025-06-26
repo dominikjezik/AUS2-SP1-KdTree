@@ -12,8 +12,8 @@ public partial class CreateAreaObjectWindow : Window
     
     public Dictionary<AreaObjectType, string> ObjectTypes { get; set; } = new()
     {
-        { AreaObjectType.Parcel, "Parcela" },
-        { AreaObjectType.RealEstate, "Nehnuteľnosť" }
+        { AreaObjectType.Parcel, "Parcel" },
+        { AreaObjectType.RealEstate, "Real Estate" }
     };
     
     public List<char> CoordinateXDirection { get; set; } = new() { 'E', 'W' };

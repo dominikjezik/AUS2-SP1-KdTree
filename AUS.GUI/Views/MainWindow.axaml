@@ -10,9 +10,7 @@
         x:DataType="vm:MainWindowViewModel"
         WindowStartupLocation="CenterScreen"
         Icon="/Assets/avalonia-logo.ico"
-        Title="AUS S1"
-        TransparencyLevelHint="AcrylicBlur"
-        Background="Transparent">
+        Title="Algorithms and Data structures - SP1 K-D tree">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -21,16 +19,6 @@
     </Design.DataContext>
     
     <Panel>
-        <ExperimentalAcrylicBorder IsHitTestVisible="False">
-            <ExperimentalAcrylicBorder.Material>
-                <ExperimentalAcrylicMaterial
-                    BackgroundSource="Digger"
-                    TintColor="White"
-                    TintOpacity="1"
-                    MaterialOpacity="0.95" />
-            </ExperimentalAcrylicBorder.Material>
-        </ExperimentalAcrylicBorder>
-        
         <Grid HorizontalAlignment="Stretch" 
               VerticalAlignment="Stretch"
               ColumnDefinitions="*,*"
@@ -44,13 +32,13 @@
                   RowDefinitions="Auto,Auto">
                 
                 <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
-                    <Button Content="+ Pridať" Margin="10 0 0 0" Click="CreateButton_OnClick" />
+                    <Button Content="+ Add" Margin="10 0 0 0" Click="CreateButton_OnClick" />
                     <Button Content="+ Generator" Margin="10 0 0 0" Click="GenerateButton_OnClick" />
-                    <Button Content="Uložiť ako..." Margin="10 0 0 0" Click="SaveToFileButton_OnClick" />
-                    <Button Content="Načítať zo súborov..." Margin="10 0 0 0" Click="LoadFromFileButton_OnClick" />
+                    <Button Content="Save as..." Margin="10 0 0 0" Click="SaveToFileButton_OnClick" />
+                    <Button Content="Load from file..." Margin="10 0 0 0" Click="LoadFromFileButton_OnClick" />
                 </StackPanel>
                 
-                <Label Grid.Row="0" Grid.Column="3" VerticalAlignment="Center">Typ objektu:</Label>
+                <Label Grid.Row="0" Grid.Column="3" VerticalAlignment="Center">Object type:</Label>
                 <ComboBox Grid.Row="0" Grid.Column="4"
                           SelectedValue="{Binding AreaObjectQuery.Type}"
                           ItemsSource="{Binding ObjectTypesFilter}"
@@ -61,7 +49,7 @@
                           HorizontalAlignment="Stretch"
                           Margin="5 0" />
                 
-                <Label Grid.Row="0" Grid.Column="5" Margin="20 0 0 0" VerticalAlignment="Center">Bod 1:</Label>
+                <Label Grid.Row="0" Grid.Column="5" Margin="20 0 0 0" VerticalAlignment="Center">Point 1:</Label>
                 <TextBox Grid.Row="0" Grid.Column="6" Watermark="X" Margin="5 0" Text="{Binding AreaObjectQuery.CoordinateAX}" />
                 <ComboBox Grid.Row="0" Grid.Column="7"
                           SelectedIndex="0"
@@ -80,7 +68,7 @@
                           SelectedValue="{Binding AreaObjectQuery.CoordinateAYDirection}"
                           ItemsSource="{Binding CoordinateYDirection}" />
                 
-                <Label Grid.Row="1" Grid.Column="5" Margin="20 10 0 0" VerticalAlignment="Center">Bod 2:</Label>
+                <Label Grid.Row="1" Grid.Column="5" Margin="20 10 0 0" VerticalAlignment="Center">Point 2:</Label>
                 <TextBox Grid.Row="1" Grid.Column="6" Watermark="X" Margin="5 10 5 0" Text="{Binding AreaObjectQuery.CoordinateBX}" />
                 <ComboBox Grid.Row="1" Grid.Column="7"
                           SelectedIndex="0"
@@ -99,7 +87,7 @@
                           SelectedValue="{Binding AreaObjectQuery.CoordinateBYDirection}"
                           ItemsSource="{Binding CoordinateYDirection}" />
                 
-                <Button Grid.Row="0" Grid.Column="11" Content="Vyhľadať" Margin="5 0 10 0" Click="SearchButton_OnClick" />
+                <Button Grid.Row="0" Grid.Column="11" Content="Search" Margin="5 0 10 0" Click="SearchButton_OnClick" />
             </Grid>
 
             <DataGrid Grid.Row="1" Grid.Column="0"
@@ -118,11 +106,11 @@
                 </DataGrid.Styles>
                 
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Typ objektu" Width="Auto" Binding="{Binding DisplayType}" />
+                    <DataGridTextColumn Header="Object type" Width="Auto" Binding="{Binding DisplayType}" />
                     <DataGridTextColumn Header="ID" Width="Auto" Binding="{Binding Id}" />
-                    <DataGridTextColumn Header="Bod A" Width="Auto" Binding="{Binding DisplayCoordinateA}" />
-                    <DataGridTextColumn Header="Bod B" Width="Auto" Binding="{Binding DisplayCoordinateB}" />
-                    <DataGridTextColumn Header="Popis" Width="*" Binding="{Binding Description}" />
+                    <DataGridTextColumn Header="Point A" Width="Auto" Binding="{Binding DisplayCoordinateA}" />
+                    <DataGridTextColumn Header="Point B" Width="Auto" Binding="{Binding DisplayCoordinateB}" />
+                    <DataGridTextColumn Header="Note" Width="*" Binding="{Binding Description}" />
                 </DataGrid.Columns>
             </DataGrid>
             
@@ -136,7 +124,7 @@
                 
                 <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Text="{Binding Title}" FontSize="20" FontWeight="Bold" Margin="0 5 0 5"/>
                 
-                <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Typ</Label>
+                <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Type</Label>
                 <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4"
                           IsEnabled="False"
                           SelectedValue="{Binding SelectedAreaObject.Type}"
@@ -147,7 +135,7 @@
                           HorizontalAlignment="Stretch"
                           Margin="5 10 5 5" />
                 
-                <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Bod 1</Label>
+                <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Point 1</Label>
                 <TextBox Grid.Row="2" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObject.CoordinateAX}" />
                 <ComboBox Grid.Row="2" Grid.Column="2"
                           SelectedIndex="0"
@@ -166,7 +154,7 @@
                           SelectedValue="{Binding SelectedAreaObject.CoordinateAYDirection}"
                           ItemsSource="{Binding CoordinateYDirection}" />
                 
-                <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Bod 2</Label>
+                <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Point 2</Label>
                 <TextBox Grid.Row="3" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding SelectedAreaObject.CoordinateBX}" />
                 <ComboBox Grid.Row="3" Grid.Column="2"
                           SelectedIndex="0"
@@ -188,8 +176,8 @@
                 <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">ID</Label>
                 <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" Watermark="ID" Margin="5 10 5 5" HorizontalAlignment="Stretch"  Text="{Binding SelectedAreaObject.Id}" />
                 
-                <Label Grid.Row="5" Grid.Column="0" Margin="0 12 0 0">Popis</Label>
-                <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="4" Watermark="Popis" Margin="5 10 5 5" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding SelectedAreaObject.Description}" />
+                <Label Grid.Row="5" Grid.Column="0" Margin="0 12 0 0">Note</Label>
+                <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="4" Watermark="Note" Margin="5 10 5 5" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding SelectedAreaObject.Description}" />
                 
                 <TextBlock Grid.Row="6" Grid.Column="0" Margin="0 12 0 0" Text="{Binding TitleAssociatedObjects}" />
                 <DataGrid Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="4"
@@ -208,17 +196,17 @@
                     </DataGrid.Styles>
                 
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Typ objektu" Width="Auto" Binding="{Binding DisplayType}" />
+                        <DataGridTextColumn Header="Object type" Width="Auto" Binding="{Binding DisplayType}" />
                         <DataGridTextColumn Header="ID" Width="Auto" Binding="{Binding Id}" />
-                        <DataGridTextColumn Header="Bod A" Width="Auto" Binding="{Binding DisplayCoordinateA}" />
-                        <DataGridTextColumn Header="Bod B" Width="Auto" Binding="{Binding DisplayCoordinateB}" />
-                        <DataGridTextColumn Header="Popis" Width="*" Binding="{Binding Description}" />
+                        <DataGridTextColumn Header="Point A" Width="Auto" Binding="{Binding DisplayCoordinateA}" />
+                        <DataGridTextColumn Header="Point B" Width="Auto" Binding="{Binding DisplayCoordinateB}" />
+                        <DataGridTextColumn Header="Note" Width="*" Binding="{Binding Description}" />
                     </DataGrid.Columns>
                 </DataGrid>
                 
                 <StackPanel Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Odstrániť" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="DeleteAreaObjectButton_OnClick" />
-                    <Button Content="Uložiť" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="SaveAreaObjectButton_OnClick" />
+                    <Button Content="Delete" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="DeleteAreaObjectButton_OnClick" />
+                    <Button Content="Save" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="SaveAreaObjectButton_OnClick" />
                 </StackPanel>
             </Grid>
             

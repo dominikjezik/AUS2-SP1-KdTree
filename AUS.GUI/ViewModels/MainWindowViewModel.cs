@@ -38,9 +38,9 @@ public class MainWindowViewModel : ViewModelBase
     
     public bool IsSelectedAreaObject => SelectedAreaObject != null;
 
-    public string Title => SelectedAreaObject == null ? string.Empty : "Úprava " + (SelectedAreaObject.Type == AreaObjectType.RealEstate ? "nehnuteľnosti" : "parcely");
+    public string Title => SelectedAreaObject == null ? string.Empty : "Edit " + (SelectedAreaObject.Type == AreaObjectType.RealEstate ? "real estate" : "parcel");
 
-    public string TitleAssociatedObjects => SelectedAreaObject == null ? string.Empty : (SelectedAreaObject.Type == AreaObjectType.RealEstate ? "Parcely" : "Nehnut.");
+    public string TitleAssociatedObjects => SelectedAreaObject == null ? string.Empty : (SelectedAreaObject.Type == AreaObjectType.RealEstate ? "Parcels" : "REs");
     
     public AreaObjectDTO AreaObjectQuery { get; set; } = new() { Type = AreaObjectType.Unknown };
 
@@ -64,15 +64,15 @@ public class MainWindowViewModel : ViewModelBase
     
     public Dictionary<AreaObjectType, string> ObjectTypesFilter { get; set; } = new()
     {
-        { AreaObjectType.Unknown, "Ľubovoľný" },
-        { AreaObjectType.Parcel, "Parcela" },
-        { AreaObjectType.RealEstate, "Nehnuteľnosť" }
+        { AreaObjectType.Unknown, "Any" },
+        { AreaObjectType.Parcel, "Parcel" },
+        { AreaObjectType.RealEstate, "Real Estate" }
     };
 
     public Dictionary<AreaObjectType, string> ObjectTypes { get; set; } = new()
     {
-        { AreaObjectType.Parcel, "Parcela" },
-        { AreaObjectType.RealEstate, "Nehnuteľnosť" }
+        { AreaObjectType.Parcel, "Parcel" },
+        { AreaObjectType.RealEstate, "Real Estate" }
     };
     
     public List<char> CoordinateXDirection { get; set; } = ['E', 'W'];

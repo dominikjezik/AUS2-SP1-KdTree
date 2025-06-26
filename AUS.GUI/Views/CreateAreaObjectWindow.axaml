@@ -12,28 +12,16 @@
         x:Class="AUS.GUI.Views.CreateAreaObjectWindow"
         x:DataType="views:CreateAreaObjectWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="AUS S1"
-        TransparencyLevelHint="AcrylicBlur"
-        Background="Transparent">
+        Title="Create Area Object">
     
     <Panel>
-        <ExperimentalAcrylicBorder IsHitTestVisible="False">
-            <ExperimentalAcrylicBorder.Material>
-                <ExperimentalAcrylicMaterial
-                    BackgroundSource="Digger"
-                    TintColor="White"
-                    TintOpacity="1"
-                    MaterialOpacity="0.65" />
-            </ExperimentalAcrylicBorder.Material>
-        </ExperimentalAcrylicBorder>
-        
         <Grid HorizontalAlignment="Stretch" 
               VerticalAlignment="Stretch"
-              ColumnDefinitions="50,*,90,*,75"
+              ColumnDefinitions="60,*,90,*,75"
               Margin="10"
               RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto">
             
-            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Text="Vytvorenie nového objektu" FontSize="20" FontWeight="Bold" Margin="0 5 0 5"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Text="Create new object" FontSize="20" FontWeight="Bold" Margin="0 5 0 5"/>
             
             <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Typ</Label>
             <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" 
@@ -47,7 +35,7 @@
                       SelectedValueBinding="{Binding Key}" />
             
             
-            <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Bod 1</Label>
+            <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Point 1</Label>
             <TextBox Grid.Row="2" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding AreaObject.CoordinateAX}" />
             <ComboBox Grid.Row="2" Grid.Column="2"
                       SelectedIndex="0"
@@ -67,7 +55,7 @@
                       SelectedValue="{Binding AreaObject.CoordinateAYDirection}"
                       ItemsSource="{Binding CoordinateYDirection}" />
             
-            <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Bod 2</Label>
+            <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">Point 2</Label>
             <TextBox Grid.Row="3" Grid.Column="1" Watermark="X" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding AreaObject.CoordinateBX}" />
             <ComboBox Grid.Row="3" Grid.Column="2"
                       SelectedIndex="0"
@@ -89,10 +77,10 @@
             <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0">ID</Label>
             <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" Watermark="ID" Margin="5 10 5 5" HorizontalAlignment="Stretch" Text="{Binding AreaObject.Id}" />
             
-            <Label Grid.Row="5" Grid.Column="0" Margin="0 12 0 0">Popis</Label>
-            <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="4" Watermark="Popis" Margin="5 10 5 5" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding AreaObject.Description}" />
+            <Label Grid.Row="5" Grid.Column="0" Margin="0 12 0 0">Note</Label>
+            <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="4" Watermark="Note" Margin="5 10 5 5" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding AreaObject.Description}" />
             
-            <Button Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3" Content="Uložiť" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="SaveButton_OnClick" />
+            <Button Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3" Content="Save" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5 10 5 5" Click="SaveButton_OnClick" />
         </Grid>
         
     </Panel>

@@ -31,7 +31,7 @@ public class AreaObjectDTO
     
     public List<AreaObjectDTO> AssociatedObjects { get; set; } = new();
     
-    public string DisplayType => Type == AreaObjectType.RealEstate ? "Nehnuteľnosť" : "Parcela";
+    public string DisplayType => Type == AreaObjectType.RealEstate ? "Real Estate" : "Parcel";
     
     public string DisplayCoordinateA => $"{CoordinateAX}{CoordinateAXDirection} {CoordinateAY}{CoordinateAYDirection}";
     
